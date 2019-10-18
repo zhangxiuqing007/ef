@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>        
+        <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+        <title>{{ .WebTitle }}</title>
+    </head>
+    <body>
+        {{ template "login.html" . }}
+        <br>
+        {{ template "pageNavi.html" . }}
+        <br>
+        {{ if .IsLogin }}
+        <!-- 如果处于登录状态下，这里有一个发帖按钮，这里是表单 -->
+        <div>
+            <form method="GET" action="/NewPostInput/{{.ThemeID}}" enctype="application/x-www-form-urlencoded">
+                <input type="submit" value="发布新帖子">
+            </form>
+        </div>
+        <br>
+        {{ end }}
+        <!--下面是所有帖子的列表-->
+        {{ range .PostHeaders }}
+        <div>
+            <span>[{{.CmtCount}}评]</span>
+            <a href="/Post/Content/{{.ID}}/0">{{.Title}}</a>
+        </div>
+        <div>
+            创建：<a href="/User/{{.CreaterID}}">{{ .CreaterName }}</a>于{{ .CreatedTimeF }}
+        </div>
+        {{ if .IsHasCmt }}
+            <div>
+                最后评论：<a href="/User/{{.LastCmterID}}">{{ .LastCmterName }}</a>于{{ .LastCmtTimeF }}
+            </div>
+        {{ end }}
+        <br>
+        {{ end }}
+        {{ template "pageNavi.html" . }}
+        <br>
+    </body>
+</html>

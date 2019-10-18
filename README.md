@@ -1,2 +1,5 @@
 # ef
- push EFServer in beego
+ Push EFServer in beego for study.
+ 
+ Try to study use Redis.
+ 

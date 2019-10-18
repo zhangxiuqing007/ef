@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+        <title>边缘社区-发布新帖</title>
+    </head>
+    <body>
+        {{ template "login.html" . }}
+        <h1>{{.ThemeName}}</h1>
+        <form method="POST" action="/NewPostCommit" enctype="application/x-www-form-urlencoded">
+            <!-- 不可见，默认选中了目标主题 -->
+            <p hidden>
+                <span>主题：</span>
+                <input type="text" name="themeID" value="{{.ThemeID}}">
+            </p>
+            <p>
+                <span>标题：</span>
+                <input type="text" name="title">
+            </p>
+            <p>
+                <span>内容：</span>
+                <input type="text" name="content">
+            </p>
+            <p>
+                <input type="submit" value="提交">
+            </p>
+        </form>
+    </body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+    <title>边缘社区-{{ .Title }}</title>
+    <script>
+        function onCheckBoxClicked(isPrise,id){
+            //发起http请求，要求修改赞踩数量
+            var typeStr = isPrise ? "p" : "b";
+            var cb = document.getElementById(id+typeStr+"_cb");
+            var httpRequest = new XMLHttpRequest();
+            httpRequest.open("POST", "/Cmt/PG", true)
+            httpRequest.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+            httpRequest.onreadystatechange = function(){
+                //没完成，就不做任何操作
+                if(httpRequest.readyState != 4){
+                    return;
+                }
+                //如果成功
+                if(httpRequest.status == 200 && httpRequest.responseText=="赞踩成功"){
+                    var times = document.getElementById(id+typeStr+"_times");
+                    if (cb.checked){
+                        times.innerText = (parseInt(times.innerText)+1).toString();
+                    }else{
+                        times.innerText = (parseInt(times.innerText)-1).toString();
+                    }
+                }else{
+                    cb.checked =!cb.checked;
+                    alert(httpRequest.responseText);
+                }
+            };
+            var dc = cb.checked ? "d" : "c"
+            httpRequest.send("cmtID="+id+"&type="+typeStr+"&dc="+dc);
+        }
+    </script>
+</head>
+<body>
+    <!--导航-->
+    {{ template "login.html" . }}
+    <a href="/Theme/{{ .ThemeID }}/0">{{ .ThemeName }}</a>
+    <!--主帖标题-->
+    <h1>{{ .Title }}</h1>
+    {{ if .AllowEditTitle }}
+    <a href="/Post/TitleEdit/{{ .ID }}">编辑标题</a>
+    {{ end }}
+    {{ template "pageNavi.html" . }}
+    <br>
+    <!-- 评论 -->
+    {{ range .Comments }}
+    <div>
+        <span>[{{ .IndexStr }}]</span>
+        <a href="/User/{{ .CmterID }}">{{ .CmterName }}</a>
+        <span>{{ .CmtTimeF }}</span>
+        <!-- 如果拥有编辑的权力 -->
+        {{ if .AllowEdit }} 
+        <a href="/Cmt/Edit/{{ .ID }}/{{ .CmtPageIndex }}">编辑</a>
+        {{ end }}
+    </div>
+    <div>
+        {{ .Content }}
+    </div>
+    <div>
+        <input type="checkbox" id="{{.ID}}p_cb" {{.IsPChecked}} onclick="onCheckBoxClicked(true,{{ .ID }})"> 赞(<span id="{{.ID}}p_times">{{ .PraiseTimes }}</span>)
+        <input type="checkbox" id="{{.ID}}b_cb" {{.IsBChecked}} onclick="onCheckBoxClicked(false,{{ .ID }})">踩(<span id="{{.ID}}b_times">{{ .BelittleTimes }}</span>)
+    </div>
+    <br>
+    {{ end }}
+    {{ template "pageNavi.html" . }}
+    <br>
+    <form method="POST" action="/Cmt">
+        <input hidden type="text" name="postID" value="{{ .ID }}">
+        <p>发表评论</p>
+        <p>
+            <input type="text" name="cmtContent">
+        </p>
+        <p>
+            <input type="submit" value="提交">
+        </p>
+    </form>
+</body>

@@ -1,0 +1,8 @@
+{{ if .IsLogin }}
+<a href="/User/{{ .UserID }}">{{ .UserName }}</a>
+<a href="/Exit">登出</a>
+{{ else }}
+<a href="/Login">登录</a>
+<a href="/UserRegist">注册</a>
+{{ end }}
+<a href="/">首页</a>

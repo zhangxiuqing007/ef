@@ -1,0 +1,25 @@
+1、Go没有类似C#的string那么易用的API，比如strings.spit()功能很单一。
+2、随机前最好给一个随机种子，否则每一批都是类似的。
+3、论坛这种web应用开发中，model层的类设计，业务逻辑很简单，甚至没有，几乎都是为UI和交互服务的。可能是论坛应用的特点吧。
+4、sql.tx事务对于sqlite批量插入操作速度有很大提升。但是InnoDB本身的原因，插入就是很慢。
+5、set global bulk_insert_buffer_size = 200000000 设置mysql插入缓存为200M
+6、SHOW GLOBAL VARIABLES LIKE '%bulk_insert_buffer_size%'; 查看全局参数值。
+7、set global innodb_flush_log_at_trx_commit = 2
+    innodb_flush_log_at_trx_commit 参数解释：
+    0（延迟写）： log_buff  --每隔1秒--> log_file  —实时—> disk                
+    1（实时写，实时刷）： log_buff  —实时—>  log_file  —实时—> disk    
+    2（实时写，延迟刷）： log_buff  —实时—> log_file --每隔1秒--> disk
+    0：最快减少mysql写的等待   1：最大安全性,不会丢失数据  2:折中，减少操作系统文件写入等待时间
+8、mysqlx_connect_timeout 这个参数默认是30秒，当单句sql的操作时间很长时，会被断开连接。
+    set global mysqlx_connect_timeout = 3600
+    set global connect_timeout = 3600
+9、配置文件修改
+    innodb_buffer_pool_size=2048M 默认8 最主要的参数，缓存索引等信息
+    max_allowed_packet=64M 默认4M
+    innodb_autoextend_increment=256,默认64
+    innodb_log_buffer_size=128M 默认1M  log文件缓冲区（内存中）
+    innodb_log_file_size=256M，默认48M  log文件大小（硬盘中，顺序IO）
+    innodb_flush_log_at_trx_commit=0  默认1 
+    reset master：清空Data文件夹内大量的bin.0000x文件。
+10、当存在嵌套多层error时，代码很丑，可以尝试recover来简化，不过特殊的错误逻辑仍需处理error。
+

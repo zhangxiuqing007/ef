@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+        <title>边缘社区-新用户注册</title>
+    </head>
+    <body>
+        <form action="/UserRegistCommit" method="POST" enctype="application/x-www-form-urlencoded">
+            昵称：<input type="text" name="name"><br>
+            账户：<input type="text" name="account"><br>
+            密码：<input type="password" name="password1"><br>
+            密码确认：<input type="password" name="password2"><br>
+            <div>{{ .Tip }}</div>
+            <input type="submit" value="提交">
+        </form>
+        <form action="/">
+            <input type="submit" value="返回">
+        </form>
+    </body>
+</html>

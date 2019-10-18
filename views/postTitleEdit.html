@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+        <title>边缘社区-标题编辑</title>
+    </head>
+    <body>
+        {{ template "login.html" . }}
+        <p>重新编辑标题内容：</p>
+        <form method="POST" action="/Post/TitleEditSubmit">
+            <input hidden type="text" name="postID" value="{{ .PostID }}">
+            <p><input type="text" name="title" value="{{ .OriTitle }}"></p>
+            <p><input type="submit" value="提交"></p>
+        </form>
+    </body>
+</html>

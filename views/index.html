@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+        <title>边缘社区-首页</title>
+    </head>
+    <body>
+        {{ template "login.html" . }}
+        <!-- 下面是本论坛的各主题列表 -->
+        <ul>
+            {{ range .Themes }}
+            <li><span>[{{ .PostCount }}帖]</span> <a href="/Theme/{{.ID}}/0">{{ .Name }}</a></li>
+            {{ end }}
+        </ul>
+    </body>
+<html>
