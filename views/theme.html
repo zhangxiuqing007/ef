@@ -5,9 +5,9 @@
         <title>{{ .WebTitle }}</title>
     </head>
     <body>
-        {{ template "login.html" . }}
+        {{ template "comp/login_info_head.html" . }}
         <br>
-        {{ template "pageNavi.html" . }}
+        {{ template "comp/pageNavi.html" . }}
         <br>
         {{ if .IsLogin }}
         <!-- 如果处于登录状态下，这里有一个发帖按钮，这里是表单 -->
@@ -34,7 +34,7 @@
         {{ end }}
         <br>
         {{ end }}
-        {{ template "pageNavi.html" . }}
+        {{ template "comp/pageNavi.html" . }}
         <br>
     </body>
 </html>

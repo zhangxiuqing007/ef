@@ -13,7 +13,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-var cmtEditPageTemplate = template.Must(template.ParseFiles("views/cmtEdit.html", "views/login.html"))
+var cmtEditPageTemplate = template.Must(template.ParseFiles("views/cmtEdit.html", "views/comp/login_info_head.html"))
 
 type cmtEditVM struct {
 	*loginInfo

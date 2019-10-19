@@ -5,7 +5,7 @@
         <title>边缘社区-评论编辑</title>
     </head>
     <body>
-        {{ template "login.html" . }}
+        {{ template "comp/login_info_head.html" . }}
         <p>重新编辑评论内容：</p>
         <form method="POST" action="/Cmt/EditSubmit">
             <input hidden type="text" name="cmtID" value="{{ .CmtID }}">

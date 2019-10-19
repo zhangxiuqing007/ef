@@ -1,39 +1,27 @@
 package controllers
 
 import (
-	"ef/models"
 	"ef/usecase"
-	"html/template"
-	"net/http"
-
-	"github.com/julienschmidt/httprouter"
 )
 
-var indexTemplate = template.Must(template.ParseFiles("views/index.html", "views/login.html"))
-
-type indexVM struct {
-	*loginInfo
-	Themes []*models.ThemeInDB
+//IndexController 首页控制器
+type IndexController struct {
+	SessionBaseController
 }
 
-//Index 打开首页
-func Index(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	sendIndexPage(w, getExsitOrCreateNewSession(w, r, true))
-}
-
-//发送首页内容
-func sendIndexPage(w http.ResponseWriter, s *Session) {
-	vm := new(indexVM)
-	vm.loginInfo = buildLoginInfo(s)
-	//把主题都放进去
-	var err error
-	vm.Themes, err = usecase.QueryAllThemes()
+//Get Get方法路由
+func (c *IndexController) Get() {
+	//查询主题
+	tms, err := usecase.QueryAllThemes()
 	if err != nil {
-		sendErrorPage(w, "查询主题列表失败")
-		return
-	} else if len(vm.Themes) == 0 {
-		sendErrorPage(w, "无主题")
-		return
+		c.Data["Tip"] = "查询主题列表失败"
+		c.TplName = "error.html"
+	} else if len(tms) == 0 {
+		c.Data["Tip"] = "无主题"
+		c.TplName = "error.html"
+	} else {
+		c.Data["loginInfo"] = buildLoginInfo(c.getSession())
+		c.Data["Themes"] = tms
+		c.TplName = "index.html"
 	}
-	indexTemplate.Execute(w, vm)
 }

@@ -35,14 +35,14 @@
 </head>
 <body>
     <!--导航-->
-    {{ template "login.html" . }}
+    {{ template "comp/login_info_head.html" . }}
     <a href="/Theme/{{ .ThemeID }}/0">{{ .ThemeName }}</a>
     <!--主帖标题-->
     <h1>{{ .Title }}</h1>
     {{ if .AllowEditTitle }}
     <a href="/Post/TitleEdit/{{ .ID }}">编辑标题</a>
     {{ end }}
-    {{ template "pageNavi.html" . }}
+    {{ template "comp/pageNavi.html" . }}
     <br>
     <!-- 评论 -->
     {{ range .Comments }}
@@ -64,7 +64,7 @@
     </div>
     <br>
     {{ end }}
-    {{ template "pageNavi.html" . }}
+    {{ template "comp/pageNavi.html" . }}
     <br>
     <form method="POST" action="/Cmt">
         <input hidden type="text" name="postID" value="{{ .ID }}">

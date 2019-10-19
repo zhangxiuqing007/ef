@@ -13,8 +13,8 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-var postTemplate = template.Must(template.ParseFiles("views/post.html", "views/pageNavi.html", "views/login.html"))
-var postTitleEditTemplate = template.Must(template.ParseFiles("views/postTitleEdit.html", "views/login.html"))
+var postTemplate = template.Must(template.ParseFiles("views/post.html", "views/comp/pageNavi.html", "views/comp/login_info_head.html"))
+var postTitleEditTemplate = template.Must(template.ParseFiles("views/postTitleEdit.html", "views/comp/login_info_head.html"))
 
 const cmtCountOnePage = 20                //帖子页，一页评论的数量
 const halfPageCountToNavigationOfPost = 8 //评论导航页数量

@@ -1,9 +1,9 @@
 package dba
 
 import (
-	"ef/models"
 	"crypto/md5"
 	"database/sql"
+	"ef/models"
 	"encoding/hex"
 	"errors"
 	"time"
@@ -852,6 +852,7 @@ insert into tb_user
 	ur_account,
 	ur_pwd,
 	ur_name,
+	ur_hp_path,
 	ur_type,
 	ur_state,
 	ur_su_time,
@@ -861,7 +862,7 @@ insert into tb_user
 	ur_b_times,
 	ur_le_time
 )
-values (?,?,?,?,?,?,?,?,?,?,?)`
+values (?,?,?,?,?,?,?,?,?,?,?,?)`
 
 //AddUser 新增用户
 func (s *sqlBase) AddUser(user *models.UserInDB) error {
@@ -869,6 +870,7 @@ func (s *sqlBase) AddUser(user *models.UserInDB) error {
 		user.Account,
 		s.passwordMd5ToHexStr(user.PassWord),
 		user.Name,
+		user.HeadPhotoPath,
 		user.Type,
 		user.State,
 		user.SignUpTime,
@@ -903,6 +905,7 @@ func (s *sqlBase) QueryUserByID(userID int) (*models.UserInDB, error) {
 		&user.Account,
 		&user.PassWord,
 		&user.Name,
+		&user.HeadPhotoPath,
 		&user.Type,
 		&user.State,
 		&user.SignUpTime,
@@ -928,6 +931,7 @@ func (s *sqlBase) QueryUserByAccountAndPwd(account string, password string) (*mo
 		&user.Account,
 		&user.PassWord,
 		&user.Name,
+		&user.HeadPhotoPath,
 		&user.Type,
 		&user.State,
 		&user.SignUpTime,

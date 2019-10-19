@@ -1,19 +1,74 @@
 package controllers
 
 import (
+	"ef/models"
 	"fmt"
 	"net/http"
+	"time"
+
+	"github.com/astaxie/beego"
 )
 
+const sessionCookieId string = "sid"
+
+var cookieLifeTime = beego.BConfig.WebConfig.Session.SessionCookieLifeTime
+
+//登录信息vm
 type loginInfo struct {
 	IsLogin  bool
 	UserID   int
 	UserName string
 }
 
+//Session 会话对象
+type Session struct {
+	CreatedTime     int64
+	LastRequestTime int64
+	PostSortType    int //帖子排序方式
+	User            *models.UserInDB
+}
+
+//协助会话操作的基类控制器
+type SessionBaseController struct {
+	beego.Controller
+}
+
+func (c *SessionBaseController) getSession() *Session {
+	i := c.GetSession(sessionCookieId)
+	if i == nil {
+		i = c.createNewSession()
+		c.SetSession(sessionCookieId, i)
+		//获取其sid
+		sidStr := c.Ctx.GetCookie("sid")
+		c.Ctx.SetCookie("sid", sidStr, cookieLifeTime, "/session", "", false, true)
+		c.Ctx.SetCookie("sid", sidStr, cookieLifeTime, "/theme", "", false, true)
+		c.Ctx.SetCookie("sid", sidStr, cookieLifeTime, "/user", "", false, true)
+		c.Ctx.SetCookie("sid", sidStr, cookieLifeTime, "/userPosts", "", false, true)
+		c.Ctx.SetCookie("sid", sidStr, cookieLifeTime, "/post", "", false, true)
+		c.Ctx.SetCookie("sid", sidStr, cookieLifeTime, "/newPost", "", false, true)
+		c.Ctx.SetCookie("sid", sidStr, cookieLifeTime, "/cmt", "", false, true)
+		c.Ctx.SetCookie("sid", sidStr, cookieLifeTime, "/attitude", "", false, true)
+	}
+	//空接口 转 会话对象指针
+	s := i.(*Session)
+	s.LastRequestTime = time.Now().UnixNano()
+	return s
+}
+
+func (c *SessionBaseController) createNewSession() *Session {
+	session := new(Session)
+	session.CreatedTime = time.Now().UnixNano()
+	session.LastRequestTime = session.CreatedTime
+	session.User = nil
+	return session
+}
+
 //创建登录信息
 func buildLoginInfo(s *Session) *loginInfo {
 	result := new(loginInfo)
+	if s == nil {
+		return result
+	}
 	result.IsLogin = s.User != nil
 	if result.IsLogin {
 		result.UserID = s.User.ID
@@ -89,4 +144,8 @@ func checkErr(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func getExsitOrCreateNewSession(w http.ResponseWriter, r *http.Request, recordTime bool) *Session {
+	return nil
 }

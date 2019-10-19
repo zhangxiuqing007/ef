@@ -2,10 +2,11 @@ package models
 
 //UserInDB 用户对象，在数据库中的表示
 type UserInDB struct {
-	ID       int
-	Account  string
-	PassWord string
-	Name     string
+	ID            int
+	Account       string
+	PassWord      string
+	Name          string
+	HeadPhotoPath string
 
 	Type  int
 	State int

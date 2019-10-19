@@ -11,15 +11,15 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-var themeTemplate = template.Must(template.ParseFiles("views/theme.html", "views/pageNavi.html", "views/login.html"))
+var themeTemplate = template.Must(template.ParseFiles("views/theme.html", "views/comp/pageNavi.html", "views/comp/login_info_head.html"))
 
 const postCountOnePage = 20                //主题页，一页帖子数量
 const halfPageCountToNavigationOfTheme = 8 //帖子导航页数量
 
 type themeVM struct {
 	ThemeID     int
-	WebTitle    string                   //网页Header
-	*loginInfo                           //登录信息
+	WebTitle    string                    //网页Header
+	*loginInfo                            //登录信息
 	PostHeaders []*models.PostOnThemePage //帖子简要内容
 	*pageNavis
 }

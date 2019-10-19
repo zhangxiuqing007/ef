@@ -24,15 +24,12 @@ func (t *testResourceBuilder) initRandomSeed() {
 
 //制造当前测试类型的sql对象
 func (t *testResourceBuilder) buildCurrentTestSQLIns() usecase.IDataIO {
-	const testNowIsMysql = true
-	if testNowIsMysql {
-		db := MySQLIns{}
-		db.Open("mysql5856")
-		return &db
-	}
-	db := SqliteIns{}
-	db.Open("../ef.db")
-	return &db
+	db := new(MySQLIns)
+	checkErr(db.Open("root123"))
+	return db
+	//db := SqliteIns{}
+	//db.Open("../ef.db")
+	//return &db
 }
 
 //生成随机主题
@@ -161,9 +158,9 @@ func (t *testResourceBuilder) isTwoPbSame(pb1, pb2 *models.PBInDB) bool {
 func (t *testResourceBuilder) checkInitNameResources() {
 	if t.firstNameWords == nil {
 		spe := []rune{' ', '\r', '\n'}
-		t.firstNameWords = tool.SplitText(tool.MustStr(tool.ReadAllTextUtf8("../config/中文姓氏.txt")), spe)
+		t.firstNameWords = tool.SplitText(tool.MustStr(tool.ReadAllTextUtf8("../conf/中文姓氏.txt")), spe)
 		t.lastNameWords = make([]rune, 0, 1800)
-		for _, v := range tool.SplitText(tool.MustStr(tool.ReadAllTextUtf8("../config/中文名字.txt")), spe) {
+		for _, v := range tool.SplitText(tool.MustStr(tool.ReadAllTextUtf8("../conf/中文名字.txt")), spe) {
 			rs := []rune(v)
 			if len(rs) > 0 {
 				t.lastNameWords = append(t.lastNameWords, rs[0])

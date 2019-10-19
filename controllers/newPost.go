@@ -16,7 +16,7 @@ type postInputVM struct {
 	ThemeID   int
 }
 
-var postInputModel = template.Must(template.ParseFiles("views/postInput.html", "views/login.html"))
+var postInputModel = template.Must(template.ParseFiles("views/postInput.html", "views/comp/login_info_head.html"))
 
 //NewPostInput 新增帖子，请求编辑表单,GET
 func NewPostInput(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
