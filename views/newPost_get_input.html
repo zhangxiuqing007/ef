@@ -6,20 +6,20 @@
     </head>
     <body>
         {{ template "comp/login_info_head.html" . }}
-        <h1>{{.ThemeName}}</h1>
-        <form method="POST" action="/NewPostCommit" enctype="application/x-www-form-urlencoded">
+        <h1>{{.vm.ThemeName}}</h1>
+        <form method="POST" action="/newPost" enctype="application/x-www-form-urlencoded">
             <!-- 不可见，默认选中了目标主题 -->
-            <p hidden>
+            <div hidden>
                 <span>主题：</span>
-                <input type="text" name="themeID" value="{{.ThemeID}}">
-            </p>
+                <input type="text" name="ThemeID" value="{{.vm.ThemeID}}">
+            </div>
             <p>
                 <span>标题：</span>
-                <input type="text" name="title">
+                <input type="text" name="Title">
             </p>
             <p>
                 <span>内容：</span>
-                <input type="text" name="content">
+                <input type="text" name="Content">
             </p>
             <p>
                 <input type="submit" value="提交">

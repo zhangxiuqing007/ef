@@ -6,6 +6,7 @@ import (
 	"ef/usecase"
 
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/context"
 )
 
 func checkErr(err error) {
@@ -14,11 +15,22 @@ func checkErr(err error) {
 	}
 }
 
+func httpMethodRouterFilter(ctx *context.Context) {
+	if !ctx.Input.IsPost() {
+		return
+	}
+	if method := ctx.Input.Query("_method"); method != "" {
+		ctx.Request.Method = method
+	}
+}
+
 func main() {
 	sqlIns := new(dba.MySQLIns)
 	checkErr(sqlIns.Open("root123"))
 	defer sqlIns.Close()
 	usecase.SetDbInstance(sqlIns)
+	//添加路由过滤器
+	beego.InsertFilter("/*", beego.BeforeRouter, httpMethodRouterFilter)
 	beego.Run()
 	////URL路由
 	//router := httprouter.New()

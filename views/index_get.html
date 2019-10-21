@@ -9,7 +9,7 @@
         <!-- 下面是本论坛的各主题列表 -->
         <ul>
             {{ range .Themes }}
-            <li><span>[{{ .PostCount }}帖]</span> <a href="/Theme/{{.ID}}/0">{{ .Name }}</a></li>
+            <li><span>[{{ .PostCount }}帖]</span> <a href="/theme?ThemeID={{.ID}}&PageIndex=0">{{ .Name }}</a></li>
             {{ end }}
         </ul>
     </body>

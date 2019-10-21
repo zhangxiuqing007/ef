@@ -7,9 +7,10 @@
     <body>
         {{ template "comp/login_info_head.html" . }}
         <p>重新编辑标题内容：</p>
-        <form method="POST" action="/Post/TitleEditSubmit">
-            <input hidden type="text" name="postID" value="{{ .PostID }}">
-            <p><input type="text" name="title" value="{{ .OriTitle }}"></p>
+        <form method="POST" action="/newPost" enctype="application/x-www-form-urlencoded">
+            <input hidden type="text" name="_method" value="PUT">
+            <input hidden type="text" name="PostID" value="{{ .vm.PostID }}">
+            <p><input type="text" name="Title" value="{{ .vm.OriTitle }}"></p>
             <p><input type="submit" value="提交"></p>
         </form>
     </body>

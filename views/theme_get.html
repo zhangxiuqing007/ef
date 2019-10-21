@@ -2,27 +2,25 @@
 <html>
     <head>        
         <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
-        <title>{{ .WebTitle }}</title>
+        <title>{{ .vm.WebTitle }}</title>
     </head>
     <body>
         {{ template "comp/login_info_head.html" . }}
         <br>
         {{ template "comp/pageNavi.html" . }}
         <br>
-        {{ if .IsLogin }}
+        {{ if .loginInfo.IsLogin }}
         <!-- 如果处于登录状态下，这里有一个发帖按钮，这里是表单 -->
         <div>
-            <form method="GET" action="/NewPostInput/{{.ThemeID}}" enctype="application/x-www-form-urlencoded">
-                <input type="submit" value="发布新帖子">
-            </form>
+            <a href="/newPost?ThemeID={{.vm.ThemeID}}&PostID=0">发布新帖子</a>
         </div>
         <br>
         {{ end }}
         <!--下面是所有帖子的列表-->
-        {{ range .PostHeaders }}
+        {{ range .vm.PostHeaders }}
         <div>
             <span>[{{.CmtCount}}评]</span>
-            <a href="/Post/Content/{{.ID}}/0">{{.Title}}</a>
+            <a href="/post?PostID={{.ID}}&PageIndex=0">{{.Title}}</a>
         </div>
         <div>
             创建：<a href="/User/{{.CreaterID}}">{{ .CreaterName }}</a>于{{ .CreatedTimeF }}

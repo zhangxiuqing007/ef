@@ -1,6 +1,9 @@
 {{ if .loginInfo.IsLogin }}
-<a href="/User/{{ .loginInfo.UserID }}">{{ .loginInfo.UserName }}</a>
-<a href="/Exit">登出</a>
+<a href="/user?UserID={{ .loginInfo.UserID }}">{{ .loginInfo.UserName }}</a>
+<form method="POST" action="/session" style="display: inline">
+    <input type="text" hidden name="_method" value="DELETE">
+    <input type="submit" value="登出">
+</form>
 {{ else }}
 <a href="/session">登录</a>
 <a href="/account">注册</a>

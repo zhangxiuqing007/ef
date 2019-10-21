@@ -71,7 +71,7 @@ func (cmt *CmtOnPostPage) FormatAllowEdit(userID int) {
 	}
 }
 
-//FormatCmtPageIndex 生成评论内容所在的页面index
+//FormatCmtPageIndex 生成当前 评论 页面的index
 func (cmt *CmtOnPostPage) FormatCmtPageIndex(index int) {
 	cmt.CmtPageIndex = index
 }

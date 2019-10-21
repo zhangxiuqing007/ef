@@ -1,9 +1,9 @@
 <div>
-    {{ range .HeadPageNavis }}
+    {{ range .navigationInfo.HeadPages }}
     <a href="{{.Path}}">[{{ .Number }}] </a>
     {{ end }}
-    <span> [{{.CurrentPage.Number}}] </span>
-    {{ range .TailPageNavis }}
+    <span> [{{.navigationInfo.CurrentPage.Number}}] </span>
+    {{ range .navigationInfo.TailPages }}
     <a href="{{.Path}}">[{{ .Number }}] </a>
     {{ end }}
 </div>

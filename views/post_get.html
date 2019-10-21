@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
     <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
-    <title>边缘社区-{{ .Title }}</title>
+    <title>边缘社区-{{ .vm.Title }}</title>
     <script>
         function onCheckBoxClicked(isPrise,id){
             //发起http请求，要求修改赞踩数量
@@ -36,23 +36,23 @@
 <body>
     <!--导航-->
     {{ template "comp/login_info_head.html" . }}
-    <a href="/Theme/{{ .ThemeID }}/0">{{ .ThemeName }}</a>
+    <a href="/theme?ThemeID={{ .vm.ThemeID }}&PageIndex=0">{{ .vm.ThemeName }}</a>
     <!--主帖标题-->
-    <h1>{{ .Title }}</h1>
-    {{ if .AllowEditTitle }}
-    <a href="/Post/TitleEdit/{{ .ID }}">编辑标题</a>
+    <h1>{{ .vm.Title }}</h1>
+    {{ if .vm.AllowEditTitle }}
+    <a href="/newPost?PostID={{ .vm.ID }}">编辑标题</a>
     {{ end }}
     {{ template "comp/pageNavi.html" . }}
     <br>
     <!-- 评论 -->
-    {{ range .Comments }}
+    {{ range .vm.Comments }}
     <div>
         <span>[{{ .IndexStr }}]</span>
         <a href="/User/{{ .CmterID }}">{{ .CmterName }}</a>
         <span>{{ .CmtTimeF }}</span>
         <!-- 如果拥有编辑的权力 -->
         {{ if .AllowEdit }} 
-        <a href="/Cmt/Edit/{{ .ID }}/{{ .CmtPageIndex }}">编辑</a>
+        <a href="/cmt?CmtID={{ .ID }}&CmtPageIndex={{ .CmtPageIndex }}">编辑</a>
         {{ end }}
     </div>
     <div>
@@ -66,11 +66,11 @@
     {{ end }}
     {{ template "comp/pageNavi.html" . }}
     <br>
-    <form method="POST" action="/Cmt">
-        <input hidden type="text" name="postID" value="{{ .ID }}">
+    <form method="POST" action="/cmt">
+        <input hidden type="text" name="PostID" value="{{ .vm.ID }}">
         <p>发表评论</p>
         <p>
-            <input type="text" name="cmtContent">
+            <input type="text" name="CmtContent">
         </p>
         <p>
             <input type="submit" value="提交">

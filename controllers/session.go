@@ -17,34 +17,45 @@ type SessionController struct {
 	SessionBaseController
 }
 
+//发送输入页
+func (c *SessionController) sendInputPage(tip string) {
+	c.TplName = "session_get.html"
+	c.Data["Tip"] = tip
+}
+
 //返回登录输入界面
 func (c *SessionController) Get() {
-	c.TplName = "session_get.html"
-	c.Data["Tip"] = "请输入账号密码"
+	c.sendInputPage("请输入账号密码")
 }
 
 //登录
 func (c *SessionController) Post() {
-	reInput := func(tip string) {
-		c.TplName = "session_get.html"
-		c.Data["Tip"] = tip
-	}
 	//读取form信息
 	data := new(loginFormData)
 	if err := c.ParseForm(data); err != nil {
-		reInput(err.Error())
+		c.sendInputPage(err.Error())
+		return
 	}
 	if data.IsInputError() {
-		reInput("请输入正确的账号密码")
+		c.sendInputPage("请输入正确的账号密码")
+		return
 	}
 	//查询用户
 	if user, err := usecase.QueryUserByAccountAndPwd(data.Account, data.Password); err != nil {
-		reInput(err.Error())
+		c.sendInputPage(err.Error())
 	} else {
 		s := c.getSession()
 		s.User = user
 		c.TplName = "session_post.html"
-		c.Data["loginInfo"] = buildLoginInfo(s)
 		c.Data["Name"] = user.Name
 	}
+}
+
+//登出
+func (c *SessionController) Delete() {
+	s := c.getSession()
+	//清空登录记录
+	s.User = nil
+	//发送首页
+	c.sendIndexPage()
 }
