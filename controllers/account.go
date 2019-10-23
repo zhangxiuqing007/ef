@@ -6,7 +6,7 @@ import (
 	"github.com/astaxie/beego"
 )
 
-//IndexController 首页控制器
+//AccountController 账号密码控制器
 type AccountController struct {
 	beego.Controller
 }
@@ -38,31 +38,31 @@ func (data *newAccountFormData) isContentHasError() bool {
 
 //Get Get方法路由
 func (c *AccountController) Post() {
-	u := new(newAccountFormData)
-	if err := c.ParseForm(u); err != nil {
+	data := new(newAccountFormData)
+	if err := c.ParseForm(data); err != nil {
 		c.sendInputPage("请输入完整的注册资料")
 		return
 	}
-	if u.isContentHasError() {
+	if data.isContentHasError() {
 		c.sendInputPage("请输入完整的注册资料")
 		return
 	}
-	if !u.isTwoPwdSame() {
+	if !data.isTwoPwdSame() {
 		c.sendInputPage("两次密码输入不一致")
 		return
 	}
 	//组织申请数据
-	data := &usecase.UserSignUpData{
-		Name:     u.Name,
-		Account:  u.Account,
-		Password: u.Password1,
+	addUser := &usecase.UserSignUpData{
+		Name:     data.Name,
+		Account:  data.Account,
+		Password: data.Password1,
 	}
 	//调用用例层代码，尝试添加账户，并返回错误
-	if err := usecase.AddUser(data); err != nil {
+	if err := usecase.AddUser(addUser); err != nil {
 		c.sendInputPage("注册失败：" + err.Error())
 		return
 	}
 	//注册成功
 	c.TplName = "account_post.html"
-	c.Data["Name"] = u.Name
+	c.Data["Name"] = data.Name
 }

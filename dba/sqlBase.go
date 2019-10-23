@@ -840,8 +840,8 @@ func (s *sqlBase) SetPB(cmtID int, userID int, isP bool, isD bool) error {
 	if isD {
 		pbIns.BTime = unixTimeCount
 		return s.Belittle(pbIns)
-		//取消贬
 	}
+	//取消贬
 	pbIns.BCTime = unixTimeCount
 	return s.BelittleCancel(pbIns)
 }

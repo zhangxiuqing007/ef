@@ -5,13 +5,23 @@
         <title>边缘社区-评论编辑</title>
     </head>
     <body>
-        {{ template "comp/login_info_head.html" . }}
+        {{ template "comp/comp_login_head_info.html" . }}
         <p>重新编辑评论内容：</p>
         <form method="POST" action="/cmt">
-            <input hidden type="text" name="_method" value="PUT">
-            <input hidden type="text" name="CmtID" value="{{ .vm.CmtID }}">
-            <input hidden type="text" name="CmtPageIndex" value="{{ .vm.CmtPageIndex }}">
-            <p><input type="text" name="CmtContent" value="{{ .vm.OriCmtContent }}"></p>
+            <label>
+                <input hidden type="text" name="_method" value="PUT">
+            </label>
+            <label>
+                <input hidden type="text" name="CmtID" value="{{ .vm.CmtID }}">
+            </label>
+            <label>
+                <input hidden type="text" name="CmtPageIndex" value="{{ .vm.CmtPageIndex }}">
+            </label>
+            <p>
+                <label>
+                    <input type="text" name="CmtContent" value="{{ .vm.OriCmtContent }}">
+                </label>
+            </p>
             <p><input type="submit" value="提交"></p>
         </form>
     </body>

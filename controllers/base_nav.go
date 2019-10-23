@@ -13,8 +13,12 @@ type pageNavigations struct {
 	TailPages   []*pageNavigation //后导航页
 }
 
+//分页导航操作器
+type pageNavigationOperator struct {
+}
+
 //创建导航页vm
-func buildPageNavigations(pathBuilder func(index int) string, beginIndex, currentIndex, endIndex int) *pageNavigations {
+func (operator *pageNavigationOperator) buildPageNavigations(pathBuilder func(index int) string, beginIndex, currentIndex, endIndex int) *pageNavigations {
 	//制作导航页切片
 	builder := func(bi, ei int) []*pageNavigation {
 		slice := make([]*pageNavigation, 0, 16)
@@ -32,7 +36,7 @@ func buildPageNavigations(pathBuilder func(index int) string, beginIndex, curren
 }
 
 //获取提供的导航页码限制
-func getNavigationPageLimitIndex(
+func (operator *pageNavigationOperator) getNavigationPageLimitIndex(
 	currentPageIndex int, /*当前页索引*/
 	countOnePage int, /*一页元素数量*/
 	maxHalfPageCount int, /*最大的导航页数量的一半*/
@@ -42,12 +46,12 @@ func getNavigationPageLimitIndex(
 	if beginIndex < 0 {
 		beginIndex = 0
 	}
-	endIndex = limitPageIndex(currentPageIndex+maxHalfPageCount, countOnePage, elementTotalCount)
+	endIndex = operator.limitPageIndex(currentPageIndex+maxHalfPageCount, countOnePage, elementTotalCount)
 	return
 }
 
 //限制页索引
-func limitPageIndex(currentIndex int, countOnePage int, totalCount int) int {
+func (operator *pageNavigationOperator) limitPageIndex(currentIndex int, countOnePage int, totalCount int) int {
 	maxIndex := totalCount / countOnePage
 	if currentIndex > maxIndex {
 		currentIndex = maxIndex

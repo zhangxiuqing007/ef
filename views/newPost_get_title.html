@@ -5,12 +5,20 @@
         <title>边缘社区-标题编辑</title>
     </head>
     <body>
-        {{ template "comp/login_info_head.html" . }}
+        {{ template "comp/comp_login_head_info.html" . }}
         <p>重新编辑标题内容：</p>
         <form method="POST" action="/newPost" enctype="application/x-www-form-urlencoded">
-            <input hidden type="text" name="_method" value="PUT">
-            <input hidden type="text" name="PostID" value="{{ .vm.PostID }}">
-            <p><input type="text" name="Title" value="{{ .vm.OriTitle }}"></p>
+            <label>
+                <input hidden type="text" name="_method" value="PUT">
+            </label>
+            <label>
+                <input hidden type="text" name="PostID" value="{{ .vm.PostID }}">
+            </label>
+            <p>
+                <label>
+                    <input type="text" name="Title" value="{{ .vm.OriTitle }}">
+                </label>
+            </p>
             <p><input type="submit" value="提交"></p>
         </form>
     </body>

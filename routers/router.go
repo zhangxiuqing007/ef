@@ -16,4 +16,5 @@ func init() {
 	beego.Router("/post", &controllers.PostController{})
 	beego.Router("/newPost", &controllers.NewPostController{})
 	beego.Router("/cmt", &controllers.CmtController{})
+	beego.Router("/attitude", &controllers.AttitudeController{})
 }

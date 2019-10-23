@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-var weekdayStrs = [7]string{"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"}
+var weekdayNames = [7]string{"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"}
 
 //FormatTimeDetail 格式化时间显示,例：2019年8月10日 星期日 16:25:59
 func FormatTimeDetail(t time.Time) string {
@@ -13,7 +13,7 @@ func FormatTimeDetail(t time.Time) string {
 		t.Year(),
 		t.Month(),
 		t.Day(),
-		weekdayStrs[t.Weekday()],
+		weekdayNames[t.Weekday()],
 		t.Hour(),
 		t.Minute(),
 		t.Second())

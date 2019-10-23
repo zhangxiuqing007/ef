@@ -10,13 +10,13 @@ import (
 
 //测试主题表相关操作	go test -v -run TestThemeTableOperations$
 func TestThemeTableOperations(t *testing.T) {
-	rander := new(testResourceBuilder)
-	rander.initRandomSeed()
-	sqlIns := rander.buildCurrentTestSQLIns()
+	randTool := new(testResourceBuilder)
+	randTool.initRandomSeed()
+	sqlIns := randTool.buildCurrentTestSQLIns()
 	defer sqlIns.Close()
 	const testCount = 5
 	//逐个新增主题
-	tms := rander.buildRandomTheme(testCount)
+	tms := randTool.buildRandomTheme(testCount)
 	for i := 0; i < testCount; i++ {
 		if err := sqlIns.AddTheme(tms[i]); err != nil {
 			t.Fatalf("x失败：新增主题 " + err.Error())
@@ -62,13 +62,13 @@ func TestThemeTableOperations(t *testing.T) {
 
 //测试用户表相关操作	go test -v -run TestUserTableOperations
 func TestUserTableOperations(t *testing.T) {
-	rander := new(testResourceBuilder)
-	rander.initRandomSeed()
-	sqlIns := rander.buildCurrentTestSQLIns()
+	randTool := new(testResourceBuilder)
+	randTool.initRandomSeed()
+	sqlIns := randTool.buildCurrentTestSQLIns()
 	defer sqlIns.Close()
 	//创建随机个用户
 	const testCount = 5
-	users := rander.buildRandomUsers(testCount)
+	users := randTool.buildRandomUsers(testCount)
 	//新增用户
 	for _, v := range users {
 		if sqlIns.AddUser(v) != nil {
@@ -79,7 +79,7 @@ func TestUserTableOperations(t *testing.T) {
 	//通过id查询用户
 	for _, v := range users {
 		quser, err := sqlIns.QueryUserByID(v.ID)
-		if err != nil || !rander.isTwoUserSame(v, quser) {
+		if err != nil || !randTool.isTwoUserSame(v, quser) {
 			t.Fatalf("x失败：通过id查询用户")
 		}
 	}
@@ -87,7 +87,7 @@ func TestUserTableOperations(t *testing.T) {
 	//通过账户密码查询用户
 	for _, v := range users {
 		quser, err := sqlIns.QueryUserByAccountAndPwd(v.Account, v.PassWord)
-		if err != nil || !rander.isTwoUserSame(v, quser) {
+		if err != nil || !randTool.isTwoUserSame(v, quser) {
 			t.Fatalf("x失败：通过账户密码查询用户")
 		}
 	}
@@ -118,19 +118,19 @@ func TestUserTableOperations(t *testing.T) {
 
 //帖子和评论增删改查，赞踩操作	go test -v -run Test_PostAndCmt
 func Test_PostAndCmt(t *testing.T) {
-	rander := new(testResourceBuilder)
-	rander.initRandomSeed()
-	sqlIns := rander.buildCurrentTestSQLIns()
+	randTool := new(testResourceBuilder)
+	randTool.initRandomSeed()
+	sqlIns := randTool.buildCurrentTestSQLIns()
 	defer sqlIns.Close()
 	const testUserCount = 5
 	const cmtCount = 50
 	//创建临时主题
-	tmIns := rander.buildRandomTheme(1)[0]
+	tmIns := randTool.buildRandomTheme(1)[0]
 	if err := sqlIns.AddTheme(tmIns); err != nil {
 		t.Fatal("x失败：新增测试主题 " + err.Error())
 	}
 	//创建临时用户
-	users := rander.buildRandomUsers(testUserCount)
+	users := randTool.buildRandomUsers(testUserCount)
 	for _, v := range users {
 		if err := sqlIns.AddUser(v); err != nil {
 			t.Fatal("x失败，新增测试用户：" + err.Error())
@@ -141,10 +141,10 @@ func Test_PostAndCmt(t *testing.T) {
 	cmts := make([]*models.CommentInDB, 0, testUserCount*2)
 	for i := 0; i < testUserCount; i++ {
 		userID := users[i].ID
-		posts = append(posts, rander.buildRandomPost(tmIns.ID, userID))
-		posts = append(posts, rander.buildRandomPost(tmIns.ID, userID))
-		cmts = append(cmts, rander.buildRandomCmt(0, userID))
-		cmts = append(cmts, rander.buildRandomCmt(0, userID))
+		posts = append(posts, randTool.buildRandomPost(tmIns.ID, userID))
+		posts = append(posts, randTool.buildRandomPost(tmIns.ID, userID))
+		cmts = append(cmts, randTool.buildRandomCmt(0, userID))
+		cmts = append(cmts, randTool.buildRandomCmt(0, userID))
 	}
 	//逐个新增帖子，前半组
 	for i := 0; i < testUserCount; i++ {
@@ -171,7 +171,7 @@ func Test_PostAndCmt(t *testing.T) {
 	for i := 0; i < cmtCount; i++ {
 		postID := posts[rand.Intn(len(posts))].ID
 		userID := users[rand.Intn(len(users))].ID
-		cmts = append(cmts, rander.buildRandomCmt(postID, userID))
+		cmts = append(cmts, randTool.buildRandomCmt(postID, userID))
 	}
 	//批量增加评论
 	if err := sqlIns.AddComments(cmts); err != nil {
@@ -181,12 +181,12 @@ func Test_PostAndCmt(t *testing.T) {
 	//查询帖子
 	for _, v := range posts {
 		p, err := sqlIns.QueryPost(v.ID)
-		if err != nil || !rander.isTwoPostSame(p, v) {
-			t.Fatalf("x失败：查询帖子失败或内容不一致 " + err.Error())
+		if err != nil || !randTool.isTwoPostSame(p, v) {
+			t.Fatalf("x失败：查询帖子失败或内容不一致 ")
 		}
 		title, err := sqlIns.QueryPostTitle(v.ID)
 		if err != nil || title != v.Title {
-			t.Fatalf("x失败：标题不一致 " + err.Error())
+			t.Fatalf("x失败：标题不一致 ")
 		}
 		v.Title = title
 		v.LastCmtTime = time.Now().UnixNano()
@@ -210,7 +210,7 @@ func Test_PostAndCmt(t *testing.T) {
 	t.Log("成功：查询用户发帖总量")
 	//查询主题下的帖子列表
 	if ps, err := sqlIns.QueryPostsOfTheme(tmIns.ID, testUserCount, testUserCount, 0); err != nil || len(ps) != testUserCount {
-		t.Fatalf("x失败：查询主题下的帖子列表，按发帖顺序排序：" + err.Error())
+		t.Fatalf("x失败：查询主题下的帖子列表，按发帖顺序排序")
 	}
 	if ps, err := sqlIns.QueryPostsOfTheme(tmIns.ID, testUserCount, testUserCount, 1); err != nil || len(ps) != testUserCount {
 		t.Fatalf("x失败：查询主题下的帖子列表，按最后评论顺序排序")
@@ -245,7 +245,7 @@ func Test_PostAndCmt(t *testing.T) {
 		if err != nil {
 			t.Fatal("x失败：查询单个评论失败")
 		}
-		cmt.Content = rander.buildRandomPostContent()
+		cmt.Content = randTool.buildRandomPostContent()
 		cmt.LastEditTime = time.Now().UnixNano()
 		cmt.EditTimes++
 		if err := sqlIns.UpdateComment(cmt); err != nil {
@@ -283,7 +283,7 @@ func Test_PostAndCmt(t *testing.T) {
 			if err != nil {
 				t.Fatal("x失败：查询pbItem：" + err.Error())
 			}
-			if !rander.isTwoPbSame(pbq, pb) {
+			if !randTool.isTwoPbSame(pbq, pb) {
 				t.Fatal("x失败：两PB不一致")
 			}
 		}
@@ -324,9 +324,9 @@ func Test_PostAndCmt(t *testing.T) {
 	t.Log("成功：删除帖子")
 	//删除用户
 	for _, v := range users {
-		sqlIns.DeleteUser(v.ID)
+		checkErr(sqlIns.DeleteUser(v.ID))
 	}
 	//删除主题
-	sqlIns.DeleteTheme(tmIns.ID)
+	checkErr(sqlIns.DeleteTheme(tmIns.ID))
 	t.Log("成功：帖子和评论增删改查操作")
 }

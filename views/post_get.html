@@ -5,19 +5,19 @@
     <script>
         function onCheckBoxClicked(isPrise,id){
             //发起http请求，要求修改赞踩数量
-            var typeStr = isPrise ? "p" : "b";
-            var cb = document.getElementById(id+typeStr+"_cb");
-            var httpRequest = new XMLHttpRequest();
-            httpRequest.open("POST", "/Cmt/PG", true)
+            const typeStr = isPrise ? "p" : "b";
+            const cb = document.getElementById(id + typeStr + "_cb");
+            const httpRequest = new XMLHttpRequest();
+            httpRequest.open("POST", "/attitude", true);
             httpRequest.setRequestHeader("Content-type","application/x-www-form-urlencoded");
             httpRequest.onreadystatechange = function(){
                 //没完成，就不做任何操作
-                if(httpRequest.readyState != 4){
+                if(httpRequest.readyState !== 4){
                     return;
                 }
                 //如果成功
-                if(httpRequest.status == 200 && httpRequest.responseText=="赞踩成功"){
-                    var times = document.getElementById(id+typeStr+"_times");
+                if(httpRequest.status === 200){
+                    const times = document.getElementById(id + typeStr + "_times");
                     if (cb.checked){
                         times.innerText = (parseInt(times.innerText)+1).toString();
                     }else{
@@ -28,21 +28,20 @@
                     alert(httpRequest.responseText);
                 }
             };
-            var dc = cb.checked ? "d" : "c"
-            httpRequest.send("cmtID="+id+"&type="+typeStr+"&dc="+dc);
+            httpRequest.send("CmtID="+id+"&IsP="+isPrise+"&IsD="+cb.checked);
         }
     </script>
 </head>
 <body>
     <!--导航-->
-    {{ template "comp/login_info_head.html" . }}
+    {{ template "comp/comp_login_head_info.html" . }}
     <a href="/theme?ThemeID={{ .vm.ThemeID }}&PageIndex=0">{{ .vm.ThemeName }}</a>
     <!--主帖标题-->
     <h1>{{ .vm.Title }}</h1>
     {{ if .vm.AllowEditTitle }}
     <a href="/newPost?PostID={{ .vm.ID }}">编辑标题</a>
     {{ end }}
-    {{ template "comp/pageNavi.html" . }}
+    {{ template "comp/comp_page_navigation.html" . }}
     <br>
     <!-- 评论 -->
     {{ range .vm.Comments }}
@@ -59,18 +58,22 @@
         {{ .Content }}
     </div>
     <div>
-        <input type="checkbox" id="{{.ID}}p_cb" {{.IsPChecked}} onclick="onCheckBoxClicked(true,{{ .ID }})"> 赞(<span id="{{.ID}}p_times">{{ .PraiseTimes }}</span>)
-        <input type="checkbox" id="{{.ID}}b_cb" {{.IsBChecked}} onclick="onCheckBoxClicked(false,{{ .ID }})">踩(<span id="{{.ID}}b_times">{{ .BelittleTimes }}</span>)
+        <label for="{{.ID}}p_cb"></label><input type="checkbox" id="{{.ID}}p_cb" {{.IsPChecked}} onclick="onCheckBoxClicked(true,{{ .ID }})"> 赞(<span id="{{.ID}}p_times">{{ .PraiseTimes }}</span>)
+        <label for="{{.ID}}b_cb"></label><input type="checkbox" id="{{.ID}}b_cb" {{.IsBChecked}} onclick="onCheckBoxClicked(false,{{ .ID }})">踩(<span id="{{.ID}}b_times">{{ .BelittleTimes }}</span>)
     </div>
     <br>
     {{ end }}
-    {{ template "comp/pageNavi.html" . }}
+    {{ template "comp/comp_page_navigation.html" . }}
     <br>
     <form method="POST" action="/cmt">
-        <input hidden type="text" name="PostID" value="{{ .vm.ID }}">
+        <label>
+            <input hidden type="text" name="PostID" value="{{ .vm.ID }}">
+        </label>
         <p>发表评论</p>
         <p>
-            <input type="text" name="CmtContent">
+            <label>
+                <input type="text" name="CmtContent">
+            </label>
         </p>
         <p>
             <input type="submit" value="提交">

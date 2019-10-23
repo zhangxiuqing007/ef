@@ -7,7 +7,7 @@ import (
 //测试连接	go test -v -run TestLinkToMysqlServer
 func TestLinkToMysqlServer(t *testing.T) {
 	db := new(MySQLIns)
-	err := db.Open("root123")
+	err := db.Open("")
 	if err == nil {
 		tms, _ := db.QueryAllThemes()
 		t.Log(len(tms))

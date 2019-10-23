@@ -14,23 +14,19 @@ var cookieLifeTime = beego.BConfig.WebConfig.Session.SessionCookieLifeTime
 
 //Session 会话对象
 type Session struct {
-	sid          string
+	Sid          string
 	PostSortType int //帖子排序方式
-	User         *models.UserInDB
+	UserID       int
+	UserName     string
 }
 
 //创建登录信息
 func (s *Session) buildLoginInfo() *loginInfo {
-	result := new(loginInfo)
-	if s == nil {
-		return result
+	return &loginInfo{
+		IsLogin:  s.UserID > 0,
+		UserID:   s.UserID,
+		UserName: s.UserName,
 	}
-	result.IsLogin = s.User != nil
-	if result.IsLogin {
-		result.UserID = s.User.ID
-		result.UserName = s.User.Name
-	}
-	return result
 }
 
 //协助会话操作的基类控制器
@@ -48,8 +44,8 @@ func (c *SessionBaseController) getSession() *Session {
 	//空接口 转 会话对象指针
 	s := inter.(*Session)
 	//更新其他cookie，这里"beeGo"会莫名其妙更新sid的cookie
-	if sidStr := c.Ctx.GetCookie(sessionCookieId); s.sid != sidStr {
-		s.sid = sidStr
+	if sidStr := c.Ctx.GetCookie(sessionCookieId); s.Sid != sidStr {
+		s.Sid = sidStr
 		c.Ctx.SetCookie(sessionCookieId, sidStr, cookieLifeTime, "/account", "", false, true)
 		c.Ctx.SetCookie(sessionCookieId, sidStr, cookieLifeTime, "/session", "", false, true)
 		c.Ctx.SetCookie(sessionCookieId, sidStr, cookieLifeTime, "/theme", "", false, true)
@@ -102,11 +98,12 @@ func (c *SessionBaseController) sendThemePage(data *themeFormData) {
 	vm := new(themeVm)
 	vm.ThemeID = tm.ID
 	vm.WebTitle = "边缘社区-" + tm.Name
-	s := c.getSession()
-	pageIndex := limitPageIndex(data.PageIndex, postCountOnePage, tm.PostCount)
-	vm.PostHeaders, err = usecase.QueryPostsOfTheme(tm.ID, postCountOnePage, pageIndex*postCountOnePage, s.PostSortType)
+	session := c.getSession()
+	oper := new(pageNavigationOperator)
+	pageIndex := oper.limitPageIndex(data.PageIndex, postCountOnePage, tm.PostCount)
+	vm.PostHeaders, err = usecase.QueryPostsOfTheme(tm.ID, postCountOnePage, pageIndex*postCountOnePage, session.PostSortType)
 	if err != nil {
-		c.send404() //无法找到帖子标题
+		c.send404() //无法找到帖子标题内容
 		return
 	}
 	for _, v := range vm.PostHeaders {
@@ -115,10 +112,10 @@ func (c *SessionBaseController) sendThemePage(data *themeFormData) {
 	pathBuilder := func(i int) string {
 		return fmt.Sprintf("/theme?ThemeID=%d&PageIndex=%d", tm.ID, i)
 	}
-	beginIndex, endIndex := getNavigationPageLimitIndex(pageIndex, postCountOnePage, halfPageCountToNavigationOfTheme, tm.PostCount)
-	nevis := buildPageNavigations(pathBuilder, beginIndex, pageIndex, endIndex)
+	beginIndex, endIndex := oper.getNavigationPageLimitIndex(pageIndex, postCountOnePage, halfPageCountToNavigationOfTheme, tm.PostCount)
+	nevis := oper.buildPageNavigations(pathBuilder, beginIndex, pageIndex, endIndex)
 	c.setNavigationVm(nevis)
-	c.setLoginVm(s)
+	c.setLoginVm(session)
 	c.Data["vm"] = vm
 	c.TplName = "theme_get.html"
 }
@@ -137,17 +134,13 @@ func (c *SessionBaseController) sendPostPage(data *postFormData) {
 		c.send404()
 		return
 	}
-	//发起请求的用户ID
-	userID := 0
+	oper := new(pageNavigationOperator)
 	s := c.getSession()
-	if s.User != nil {
-		userID = s.User.ID
-	}
 	//查询评论内容
-	vm.PostOnPostPage.FormatShowInfo(userID)
+	vm.PostOnPostPage.FormatShowInfo(s.UserID)
 	//限制页Index
-	pageIndex := limitPageIndex(data.PageIndex, cmtCountOnePage, vm.CmtCount)
-	vm.Comments, err = usecase.QueryCommentsOfPostPage(data.PostID, cmtCountOnePage, pageIndex*cmtCountOnePage, userID)
+	pageIndex := oper.limitPageIndex(data.PageIndex, cmtCountOnePage, vm.CmtCount)
+	vm.Comments, err = usecase.QueryCommentsOfPostPage(data.PostID, cmtCountOnePage, pageIndex*cmtCountOnePage, s.UserID)
 	if err != nil {
 		c.send404()
 		return
@@ -158,30 +151,58 @@ func (c *SessionBaseController) sendPostPage(data *postFormData) {
 		v.FormatCheckedStrOfPB()
 		v.FormatStringTime()
 		v.FormatIndex(baseLayerCount + i)
-		v.FormatAllowEdit(userID)
+		v.FormatAllowEdit(s.UserID)
 		v.FormatCmtPageIndex(pageIndex)
 	}
 	//制作导航链接
-	beginIndex, endIndex := getNavigationPageLimitIndex(pageIndex, cmtCountOnePage, halfPageCountToNavigationOfPost, vm.CmtCount)
+	beginIndex, endIndex := oper.getNavigationPageLimitIndex(pageIndex, cmtCountOnePage, halfPageCountToNavigationOfPost, vm.CmtCount)
 	pathBuilder := func(index int) string {
 		return fmt.Sprintf("/post?PostID=%d&PageIndex=%d", data.PostID, index)
 	}
-	c.setNavigationVm(buildPageNavigations(pathBuilder, beginIndex, pageIndex, endIndex))
+	c.setNavigationVm(oper.buildPageNavigations(pathBuilder, beginIndex, pageIndex, endIndex))
 	c.Data["vm"] = vm
 	c.setLoginVm(s)
 	c.TplName = "post_get.html"
 }
 
+//200 	OK
+//请求成功。一般用于GET与POST请求
+func (c *SessionBaseController) send200(extraStr string) {
+	c.Ctx.ResponseWriter.WriteHeader(200)
+	c.Ctx.WriteString("200 	OK	" + extraStr)
+}
+
 //400 Bad Request
 //该状态码表示请求报文中存在语法错误。当错误发生时，需要修改请求的内容再次发送请求。另外，浏览器会像200OK一样处理该状态码。
-func (c *SessionBaseController) send400() {
+func (c *SessionBaseController) send400(extraStr string) {
 	c.Ctx.ResponseWriter.WriteHeader(400)
-	c.Ctx.WriteString("400：请求报文中存在语法错误")
+	c.Ctx.WriteString("400	Bad Request	" + extraStr)
+}
+
+//401 	Unauthorized
+//请求要求用户的身份认证
+func (c *SessionBaseController) send401(extraStr string) {
+	c.Ctx.ResponseWriter.WriteHeader(401)
+	c.Ctx.WriteString("401	Unauthorized	" + extraStr)
+}
+
+//403 	Forbidden
+//服务器理解请求客户端的请求，但是拒绝执行此请求
+func (c *SessionBaseController) send403(extraStr string) {
+	c.Ctx.ResponseWriter.WriteHeader(403)
+	c.Ctx.WriteString("403	Forbidden	" + extraStr)
 }
 
 //404 Not Found
 //表明服务器上无法找到请求的资源。除此之外，也可以在服务端拒绝请求且不想说明理由时使用
-func (c *SessionBaseController) send404() {
+func (c *SessionBaseController) send404(extraStr string) {
 	c.Ctx.ResponseWriter.WriteHeader(404)
-	c.Ctx.WriteString("404：服务器上无法找到请求的资源")
+	c.Ctx.WriteString("404	Not Found	" + extraStr)
+}
+
+//406 	Not Acceptable
+//服务器无法根据客户端请求的内容特性完成请求
+func (c *SessionBaseController) send406(extraStr string) {
+	c.Ctx.ResponseWriter.WriteHeader(406)
+	c.Ctx.WriteString("406	Not Acceptable	" + extraStr)
 }

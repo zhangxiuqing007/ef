@@ -15,6 +15,7 @@ func checkErr(err error) {
 	}
 }
 
+//过滤器，保证使用除GET和POST外的方法
 func httpMethodRouterFilter(ctx *context.Context) {
 	if !ctx.Input.IsPost() {
 		return
@@ -26,12 +27,17 @@ func httpMethodRouterFilter(ctx *context.Context) {
 
 func main() {
 	sqlIns := new(dba.MySQLIns)
-	checkErr(sqlIns.Open("root123"))
+	checkErr(sqlIns.Open(""))
 	defer sqlIns.Close()
 	usecase.SetDbInstance(sqlIns)
+	//读取数据库配置
+	dba.MysqlUser = beego.AppConfig.String("mysqluser")
+	dba.MysqlPwd = beego.AppConfig.String("mysqlpwd")
+	dba.MysqlDb = beego.AppConfig.String("mysqldb")
 	//添加路由过滤器
 	beego.InsertFilter("/*", beego.BeforeRouter, httpMethodRouterFilter)
 	beego.Run()
+
 	////URL路由
 	//router := httprouter.New()
 	//router.GET("/", controllers.Index)

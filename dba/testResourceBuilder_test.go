@@ -25,7 +25,7 @@ func (t *testResourceBuilder) initRandomSeed() {
 //制造当前测试类型的sql对象
 func (t *testResourceBuilder) buildCurrentTestSQLIns() usecase.IDataIO {
 	db := new(MySQLIns)
-	checkErr(db.Open("root123"))
+	checkErr(db.Open(""))
 	return db
 	//db := SqliteIns{}
 	//db.Open("../ef.db")

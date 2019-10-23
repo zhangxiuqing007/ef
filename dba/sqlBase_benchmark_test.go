@@ -98,11 +98,11 @@ func BenchmarkBatchInsertComment(b *testing.B) {
 
 //测试查询主题页速度
 func BenchmarkQueryThemePage(b *testing.B) {
-	rander := new(testResourceBuilder)
-	rander.initRandomSeed()
-	iotool := rander.buildCurrentTestSQLIns()
-	defer iotool.Close()
-	tms, err := iotool.QueryAllThemes()
+	randTool := new(testResourceBuilder)
+	randTool.initRandomSeed()
+	sqlIns := randTool.buildCurrentTestSQLIns()
+	defer sqlIns.Close()
+	tms, err := sqlIns.QueryAllThemes()
 	if err != nil {
 		b.Fatal("x错误：" + err.Error())
 	}
@@ -118,7 +118,7 @@ func BenchmarkQueryThemePage(b *testing.B) {
 		}
 		//定义一个排序类型
 		sortType := 1
-		if _, err := iotool.QueryPostsOfTheme(tm.ID, postCountOnce, postCountOnce*pageIndex, sortType); err != nil {
+		if _, err := sqlIns.QueryPostsOfTheme(tm.ID, postCountOnce, postCountOnce*pageIndex, sortType); err != nil {
 			b.Fatal("x错误：" + err.Error())
 		}
 	}
@@ -126,11 +126,11 @@ func BenchmarkQueryThemePage(b *testing.B) {
 
 //测试查询帖子页速度
 func BenchmarkQueryPostPage(b *testing.B) {
-	rander := new(testResourceBuilder)
-	rander.initRandomSeed()
-	iotool := rander.buildCurrentTestSQLIns()
-	defer iotool.Close()
-	tms, err := iotool.QueryAllThemes()
+	randTool := new(testResourceBuilder)
+	randTool.initRandomSeed()
+	sqlIns := randTool.buildCurrentTestSQLIns()
+	defer sqlIns.Close()
+	tms, err := sqlIns.QueryAllThemes()
 	if err != nil {
 		b.Fatal("x错误：" + err.Error())
 	}
@@ -138,7 +138,7 @@ func BenchmarkQueryPostPage(b *testing.B) {
 	tmPostMap := make(map[int][]*models.PostOnThemePage, 16)
 	for _, v := range tms {
 		tmPostMap[v.ID] = make([]*models.PostOnThemePage, 0, maxPostCount)
-		posts, err := iotool.QueryPostsOfTheme(v.ID, maxPostCount, 0, 0)
+		posts, err := sqlIns.QueryPostsOfTheme(v.ID, maxPostCount, 0, 0)
 		if err != nil {
 			b.Fatal("x错误：" + err.Error())
 		}
@@ -150,8 +150,8 @@ func BenchmarkQueryPostPage(b *testing.B) {
 	//开始随机查询主题页帖子头列表
 	for i := 0; i < b.N; i++ {
 		//随机选取一个主题
-		rnadTm := tms[rand.Intn(len(tms))]
-		postHeaders := tmPostMap[rnadTm.ID]
+		randTm := tms[rand.Intn(len(tms))]
+		postHeaders := tmPostMap[randTm.ID]
 		//随机选取一个帖子的ID
 		post := postHeaders[rand.Intn(len(postHeaders))]
 		//随意产生一个页Index
@@ -161,7 +161,7 @@ func BenchmarkQueryPostPage(b *testing.B) {
 		}
 		//随机产生一个用户ID
 		userID := rand.Intn(11) + 1
-		if _, err := iotool.QueryCommentsOfPostPage(post.ID, cmtCountOnce, cmtCountOnce*pageIndex, userID); err != nil {
+		if _, err := sqlIns.QueryCommentsOfPostPage(post.ID, cmtCountOnce, cmtCountOnce*pageIndex, userID); err != nil {
 			b.Fatal("x错误：" + err.Error())
 		}
 	}

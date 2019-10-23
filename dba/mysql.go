@@ -9,15 +9,20 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+//默认值
+var MysqlUser = "root"
+var MysqlPwd = "mysql5856"
+var MysqlDb = "efdb_bu"
+
 //MySQLIns mysql数据库实现
 type MySQLIns struct {
 	sqlBase
 }
 
-//Open 打开
+//Open 打开 这里的参数没用
 func (s *MySQLIns) Open(dbFilePath string) error {
 	var err error
-	s.DB, err = sql.Open("mysql", fmt.Sprintf("root:%s@tcp(127.0.0.1:3306)/efdb_bu?multiStatements=true", dbFilePath))
+	s.DB, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/%s?multiStatements=true", MysqlUser, MysqlPwd, MysqlDb))
 	return err
 }
 
