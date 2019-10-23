@@ -6,7 +6,7 @@ import (
 )
 
 type NewPostController struct {
-	SessionBaseController
+	baseController
 }
 
 type newPostGetFormData struct {
@@ -15,14 +15,14 @@ type newPostGetFormData struct {
 }
 
 func (c *NewPostController) Get() {
-	data := new(newPostGetFormData)
-	if err := c.ParseForm(data); err != nil || data.ThemeID < 0 || data.PostID < 0 {
-		c.send400()
+	//检查登录情况
+	if c.getSession().UserID <= 0 {
+		c.send401("请先登录")
 		return
 	}
-	//检查登录情况
-	if c.getSession().User == nil {
-		c.send404()
+	data := new(newPostGetFormData)
+	if err := c.ParseForm(data); err != nil || data.ThemeID < 0 || data.PostID < 0 {
+		c.send400("请求信息错误")
 		return
 	}
 	if data.PostID == 0 {
@@ -41,7 +41,7 @@ type postInputVm struct {
 func (c *NewPostController) GetToBuildNewPost(data *newPostGetFormData) {
 	tm, err := usecase.QueryTheme(data.ThemeID)
 	if err != nil {
-		c.send404()
+		c.send404("主题不存在")
 		return
 	}
 	c.Data["vm"] = &postInputVm{tm.Name, tm.ID}
@@ -58,7 +58,7 @@ type postTitleEditVm struct {
 func (c *NewPostController) GetToEditPostTitle(data *newPostGetFormData) {
 	title, err := usecase.QueryPostTitle(data.PostID)
 	if err != nil {
-		c.send404()
+		c.send404("帖子不存在")
 		return
 	}
 	c.Data["vm"] = &postTitleEditVm{data.PostID, title}
@@ -68,20 +68,20 @@ func (c *NewPostController) GetToEditPostTitle(data *newPostGetFormData) {
 
 //新增帖子
 func (c *NewPostController) Post() {
+	s := c.getSession()
+	if s.UserID <= 0 {
+		c.send401("请先登录")
+		return
+	}
 	data := new(usecase.PostAddData)
 	if err := c.ParseForm(data); err != nil {
-		c.send400()
+		c.send400("请求信息错误")
 		return
 	}
-	s := c.getSession()
-	if s.User == nil {
-		c.send400()
-		return
-	}
-	data.UserID = s.User.ID
+	data.UserID = s.UserID
 	/*检查用户权限*/
 	if err := usecase.AddPost(data); err != nil {
-		c.send404()
+		c.send406("操作失败：" + err.Error())
 		return
 	}
 	//成功的话，直接发主题页，无论任何方式排序，都是在主题第一位
@@ -91,7 +91,7 @@ func (c *NewPostController) Post() {
 	})
 }
 
-type FixTitleFormData struct {
+type fixTitleFormData struct {
 	PostID int
 	Title  string
 }
@@ -99,34 +99,34 @@ type FixTitleFormData struct {
 //修改帖子标题
 func (c *NewPostController) Put() {
 	s := c.getSession()
-	if s.User == nil {
-		c.send400()
+	if s.UserID <= 0 {
+		c.send401("请先登录")
 		return
 	}
-	data := new(FixTitleFormData)
+	data := new(fixTitleFormData)
 	if err := c.ParseForm(data); err != nil {
-		c.send400()
+		c.send400("请求信息错误")
 		return
 	}
 	//查询旧的Post
 	post, err := usecase.QueryPost(data.PostID)
 	if err != nil {
-		c.send404()
+		c.send404("帖子不存在")
 		return
 	}
 	//验证合法性
-	if s.User.ID != post.UserID {
-		c.send404()
+	if s.UserID != post.UserID {
+		c.send403("无修改权限")
 		return
-		//panic(errors.New("必须要发表者身份才能编辑标题"))
 	}
 	/*验证其他状态，包括帖子状态，标题是否可以修改，用户是否还有编辑权限*/
+
 	//更新内容
 	post.Title = data.Title
 	post.LastCmtTime = time.Now().UnixNano()
 	//保存到DB
 	if err := usecase.UpdatePostTitle(post); err != nil {
-		c.send404()
+		c.send406("操作失败：" + err.Error())
 		return
 	}
 	//发送帖子页

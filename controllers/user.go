@@ -17,7 +17,7 @@ type userVm struct {
 }
 
 type UserController struct {
-	SessionBaseController
+	baseController
 }
 
 type userFromData struct {
@@ -27,12 +27,12 @@ type userFromData struct {
 func (c *UserController) Get() {
 	data := new(userFromData)
 	if err := c.ParseForm(data); err != nil || data.UserID <= 0 {
-		c.send400()
+		c.send400("请求信息错误")
 		return
 	}
 	saInfo, err := usecase.QueryUserByID(data.UserID)
 	if err != nil {
-		c.send404()
+		c.send404("用户不存在")
 		return
 	}
 	vm := new(userVm)

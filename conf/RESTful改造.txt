@@ -34,3 +34,12 @@ PUT：修改评论
 
 /attitude
 POST：新建赞/踩
+
+/headPhoto
+GET：获取提交头像页
+PUT：修改（新建）头像
+
+/img
+GET：按照分页 返回最近提交过的图片
+POST：提交图片，加入我的图片库
+DELETE：删除我的一个图片

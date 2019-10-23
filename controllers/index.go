@@ -2,7 +2,7 @@ package controllers
 
 //IndexController 首页控制器
 type IndexController struct {
-	SessionBaseController
+	baseController
 }
 
 //Get Get方法路由

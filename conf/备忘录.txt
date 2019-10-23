@@ -1,0 +1,5 @@
+mysql信息
+user:root
+/*台式机 root123*/
+/*笔记本 mysql5856*/
+dbName:efdb_bu

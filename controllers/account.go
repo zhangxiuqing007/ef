@@ -22,10 +22,10 @@ func (c *AccountController) Get() {
 }
 
 type newAccountFormData struct {
-	Name      string `form:"name"`
-	Account   string `form:"account"`
-	Password1 string `form:"password1"`
-	Password2 string `form:"password2"`
+	Name      string
+	Account   string
+	Password1 string
+	Password2 string
 }
 
 func (data *newAccountFormData) isTwoPwdSame() bool {
@@ -59,10 +59,10 @@ func (c *AccountController) Post() {
 	}
 	//调用用例层代码，尝试添加账户，并返回错误
 	if err := usecase.AddUser(addUser); err != nil {
-		c.sendInputPage("注册失败：" + err.Error())
+		c.sendInputPage("注册失败 " + err.Error())
 		return
 	}
-	//注册成功
+	//注册成功，发送结果
 	c.TplName = "account_post.html"
 	c.Data["Name"] = data.Name
 }

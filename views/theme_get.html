@@ -23,11 +23,11 @@
             <a href="/post?PostID={{.ID}}&PageIndex=0">{{.Title}}</a>
         </div>
         <div>
-            创建：<a href="/User/{{.CreaterID}}">{{ .CreaterName }}</a>于{{ .CreatedTimeF }}
+            创建：<a href="/user?UserID={{.CreaterID}}">{{ .CreaterName }}</a>于{{ .CreatedTimeF }}
         </div>
         {{ if .IsHasCmt }}
             <div>
-                最后评论：<a href="/User/{{.LastCmterID}}">{{ .LastCmterName }}</a>于{{ .LastCmtTimeF }}
+                最后评论：<a href="/user?UserID={{.LastCmterID}}">{{ .LastCmterName }}</a>于{{ .LastCmtTimeF }}
             </div>
         {{ end }}
         <br>

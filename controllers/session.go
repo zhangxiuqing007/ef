@@ -5,8 +5,8 @@ import (
 )
 
 type loginFormData struct {
-	Account  string `form:"account"`
-	Password string `form:"password"`
+	Account  string
+	Password string
 }
 
 func (data *loginFormData) IsInputError() bool {
@@ -14,7 +14,7 @@ func (data *loginFormData) IsInputError() bool {
 }
 
 type SessionController struct {
-	SessionBaseController
+	baseController
 }
 
 //发送输入页
@@ -45,7 +45,8 @@ func (c *SessionController) Post() {
 		c.sendInputPage(err.Error())
 	} else {
 		s := c.getSession()
-		s.User = user
+		s.UserID = user.ID
+		s.UserName = user.Name
 		c.TplName = "session_post.html"
 		c.Data["Name"] = user.Name
 	}
@@ -55,7 +56,8 @@ func (c *SessionController) Post() {
 func (c *SessionController) Delete() {
 	s := c.getSession()
 	//清空登录记录
-	s.User = nil
+	s.UserID = 0
+	s.UserName = ""
 	//发送首页
 	c.sendIndexPage()
 }

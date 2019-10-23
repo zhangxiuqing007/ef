@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+    <title>边缘社区-发表评论</title>
+</head>
+<body>
+    {{ template "comp/comp_login_head_info.html" . }}
+    <h1>{{ .vm.PostTitle }}</h1>
+    <br>
+    <label>请输入评论内容：</label>
+    <form action="/cmt" method="POST">
+        <label>
+            <input hidden type="text" name="PostID" value="{{ .vm.PostID }}">
+            <input type="text" name="CmtContent">
+            <input type="submit" value="提交">
+        </label>
+    </form>
+</body>
+</html>

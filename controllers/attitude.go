@@ -3,7 +3,7 @@ package controllers
 import "ef/usecase"
 
 type AttitudeController struct {
-	SessionBaseController
+	baseController
 }
 
 type PBFormData struct {
@@ -16,20 +16,20 @@ func (c *AttitudeController) Post() {
 	//解析表单数据
 	data := new(PBFormData)
 	if err := c.ParseForm(data); err != nil {
-		c.send400()
+		c.send400("请求信息错误")
 		return
 	}
 	//先查看登录状态
 	s := c.getSession()
 	if s.UserID == 0 {
-		c.send401()
+		c.send401("请先登录")
 		return
 	}
 	//无法完成请求的内容
 	if err := usecase.SetPB(data.CmtID, s.UserID, data.IsP, data.IsD); err != nil {
-		c.send406()
+		c.send406("操作失败")
 		return
 	}
 	//直接返回语句，代表成功
-	c.send200()
+	c.send200("")
 }

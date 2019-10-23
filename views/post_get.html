@@ -47,7 +47,7 @@
     {{ range .vm.Comments }}
     <div>
         <span>[{{ .IndexStr }}]</span>
-        <a href="/User/{{ .CmterID }}">{{ .CmterName }}</a>
+        <a href="/user?UserID={{ .CmterID }}">{{ .CmterName }}</a>
         <span>{{ .CmtTimeF }}</span>
         <!-- 如果拥有编辑的权力 -->
         {{ if .AllowEdit }} 
@@ -65,11 +65,13 @@
     {{ end }}
     {{ template "comp/comp_page_navigation.html" . }}
     <br>
+    <a href="cmt?CmtID=0&CmtPageIndex={{ .vm.ID }}">发表评论</a>
+    <br>
     <form method="POST" action="/cmt">
         <label>
             <input hidden type="text" name="PostID" value="{{ .vm.ID }}">
         </label>
-        <p>发表评论</p>
+        <p>快速评论：</p>
         <p>
             <label>
                 <input type="text" name="CmtContent">
