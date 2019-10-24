@@ -48,6 +48,7 @@
     <div>
         <span>[{{ .IndexStr }}]</span>
         <a href="/user?UserID={{ .CmterID }}">{{ .CmterName }}</a>
+        <img src="{{ .CmterHeadPhotoPath }}" width="64px">
         <span>{{ .CmtTimeF }}</span>
         <!-- 如果拥有编辑的权力 -->
         {{ if .AllowEdit }} 

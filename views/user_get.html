@@ -6,16 +6,18 @@
         <title>边缘社区-用户资料</title>
     </head>
     <body>
+        <img src="{{ .vm.HeadPhotoPath }}" alt="用户头像">
+        {{ if .vm.AllowFixHeadPhoto }}
+        <a href="/headPhoto">修改头像</a>
+        {{ end }}
         <div>昵称：{{.vm.Name}}</div>
         <div>注册时间：{{.vm.SignUpTime}}</div>
         <div>类型：{{.vm.Type}}</div>
         <div>状态：{{.vm.State}}</div>
-
         <div>发帖数：{{.vm.PostCount}}</div>
         <div>评论数：{{.vm.CommentCount}}</div>
         <div>被赞{{.vm.PraiseTimes}} 次</div>
         <div>被踩 {{.vm.BelittleTimes}} 次</div>
-
         <div>最近一次操作：{{.vm.LastEditTime}}</div>
         <div>
             <a href="/userPosts?UserID={{.vm.ID}}&PageIndex=0">查看{{.vm.Name}}发的帖子</a>

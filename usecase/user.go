@@ -7,6 +7,12 @@ import (
 	"unicode/utf8"
 )
 
+var defaultHeadPhotoPath string
+
+func InitDefaultHeadPhotoPath(path string) {
+	defaultHeadPhotoPath = path
+}
+
 //UserSignUpData 新用户注册传输用数据结构，由Controller创建。
 type UserSignUpData struct {
 	Account  string
@@ -15,20 +21,21 @@ type UserSignUpData struct {
 }
 
 func (data UserSignUpData) buildUserIns() *models.UserInDB {
-	user := new(models.UserInDB)
-	user.ID = 0
-	user.Account = data.Account
-	user.PassWord = data.Password
-	user.Name = data.Name
-	user.Type = models.UserTypeNormalUser
-	user.State = models.UserStateNormal
-	user.SignUpTime = time.Now().UnixNano()
-	user.PostCount = 0
-	user.CommentCount = 0
-	user.PraiseTimes = 0
-	user.BelittleTimes = 0
-	user.LastEditTime = 0
-	return user
+	return &models.UserInDB{
+		ID:            0,
+		Account:       data.Account,
+		PassWord:      data.Password,
+		Name:          data.Name,
+		HeadPhotoPath: defaultHeadPhotoPath,
+		Type:          models.UserTypeNormalUser,
+		State:         models.UserStateNormal,
+		SignUpTime:    time.Now().UnixNano(),
+		PostCount:     0,
+		CommentCount:  0,
+		PraiseTimes:   0,
+		BelittleTimes: 0,
+		LastEditTime:  0,
+	}
 }
 
 //AddUser signUp

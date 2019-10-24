@@ -5,6 +5,7 @@ import (
 	"ef/tool"
 	"ef/usecase"
 	"fmt"
+	"time"
 
 	"github.com/astaxie/beego" //整个controller层都是依赖于beego的
 )
@@ -44,27 +45,29 @@ type baseController struct {
 
 //获取session对象
 func (c *baseController) getSession() *session {
-	inter := c.GetSession(sessionCookieId)
-	if inter == nil {
-		inter = new(session)
-		c.SetSession(sessionCookieId, inter)
+	if inter := c.GetSession(sessionCookieId); inter == nil {
+		news := new(session)
+		c.SetSession(sessionCookieId, news)
+		//获取刚刚生成的sid
+		news.Sid = c.CruSession.SessionID()
+		setCookie := func(path string) {
+			c.Ctx.SetCookie(sessionCookieId, news.Sid, cookieLifeTime, path, "", false, true)
+		}
+		setCookie("/account")
+		setCookie("/session")
+		setCookie("/theme")
+		setCookie("/user")
+		setCookie("/userPosts")
+		setCookie("/post")
+		setCookie("/newPost")
+		setCookie("/cmt")
+		setCookie("/attitude")
+		setCookie("/headPhoto")
+		setCookie("/img")
+		return news
+	} else {
+		return inter.(*session)
 	}
-	//空接口 转 会话对象指针
-	s := inter.(*session)
-	//更新其他cookie，这里"beeGo"会莫名其妙更新sid的cookie
-	if sidStr := c.Ctx.GetCookie(sessionCookieId); s.Sid != sidStr {
-		s.Sid = sidStr
-		c.Ctx.SetCookie(sessionCookieId, sidStr, cookieLifeTime, "/account", "", false, true)
-		c.Ctx.SetCookie(sessionCookieId, sidStr, cookieLifeTime, "/session", "", false, true)
-		c.Ctx.SetCookie(sessionCookieId, sidStr, cookieLifeTime, "/theme", "", false, true)
-		c.Ctx.SetCookie(sessionCookieId, sidStr, cookieLifeTime, "/user", "", false, true)
-		c.Ctx.SetCookie(sessionCookieId, sidStr, cookieLifeTime, "/userPosts", "", false, true)
-		c.Ctx.SetCookie(sessionCookieId, sidStr, cookieLifeTime, "/post", "", false, true)
-		c.Ctx.SetCookie(sessionCookieId, sidStr, cookieLifeTime, "/newPost", "", false, true)
-		c.Ctx.SetCookie(sessionCookieId, sidStr, cookieLifeTime, "/cmt", "", false, true)
-		c.Ctx.SetCookie(sessionCookieId, sidStr, cookieLifeTime, "/attitude", "", false, true)
-	}
-	return s
 }
 
 func (c *baseController) setNavigationVm(n *tool.PageNavigations) {
@@ -174,6 +177,39 @@ func (c *baseController) sendPostPage(data *postFormData) {
 	c.Data["vm"] = vm
 	c.setLoginVm(s)
 	c.TplName = "post_get.html"
+}
+
+type userVm struct {
+	*models.UserInDB
+	//下面需要格式化
+	SignUpTime   string
+	Type         string
+	State        string
+	LastEditTime string
+
+	AllowFixHeadPhoto bool
+}
+
+//发送用户页
+func (c *baseController) sendUserPage(data *userFromData) {
+	saInfo, err := usecase.QueryUserByID(data.UserID)
+	if err != nil {
+		c.send404("用户不存在")
+		return
+	}
+	vm := new(userVm)
+	vm.UserInDB = saInfo
+	vm.SignUpTime = tool.FormatTimeDetail(time.Unix(0, saInfo.SignUpTime))
+	vm.Type = models.GetUserTypeShowName(saInfo.Type)
+	vm.State = models.GetUserStateShowName(saInfo.State)
+	if saInfo.LastEditTime == 0 {
+		vm.LastEditTime = "无"
+	} else {
+		vm.LastEditTime = tool.FormatTimeDetail(time.Unix(0, saInfo.LastEditTime))
+	}
+	vm.AllowFixHeadPhoto = vm.ID == c.getSession().UserID
+	c.Data["vm"] = vm
+	c.TplName = "user_get.html"
 }
 
 //200 	OK

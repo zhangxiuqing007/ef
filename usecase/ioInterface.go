@@ -16,17 +16,17 @@ type IDataIO interface {
 	Close() error
 
 	AddTheme(theme *models.ThemeInDB) error            //新增主题
-	DeleteTheme(themeID int) error                    //删除主题
+	DeleteTheme(themeID int) error                     //删除主题
 	UpdateTheme(theme *models.ThemeInDB) error         //更新主题（名称）
 	QueryTheme(themeID int) (*models.ThemeInDB, error) //查询主题
 	QueryAllThemes() ([]*models.ThemeInDB, error)      //查询所有主题
-	QueryPostCountOfTheme(themeID int) (int, error)   //查询主题的帖子量
+	QueryPostCountOfTheme(themeID int) (int, error)    //查询主题的帖子量
 
-	AddPost(post *models.PostInDB, cmt *models.CommentInDB) error                                   //新增帖子
-	AddPosts(post []*models.PostInDB, cmt []*models.CommentInDB) error                              //批量新增帖子
-	DeletePost(postID int) error                                                                  //删除帖子
+	AddPost(post *models.PostInDB, cmt *models.CommentInDB) error                                  //新增帖子
+	AddPosts(post []*models.PostInDB, cmt []*models.CommentInDB) error                             //批量新增帖子
+	DeletePost(postID int) error                                                                   //删除帖子
 	QueryPost(postID int) (*models.PostInDB, error)                                                //查询DB帖子
-	QueryPostTitle(postID int) (string, error)                                                    //查询帖子标题
+	QueryPostTitle(postID int) (string, error)                                                     //查询帖子标题
 	UpdatePostTitle(*models.PostInDB) error                                                        //修改帖子标题
 	QueryPostsOfTheme(themeID int, count, offset, sortType int) ([]*models.PostOnThemePage, error) //查询主题下的帖子列表
 	QueryPostsOfUser(userID int, count, offset int) ([]*models.PostOnThemePage, error)             //查询用户发的帖子列表
@@ -34,7 +34,7 @@ type IDataIO interface {
 
 	AddComment(comment *models.CommentInDB) error                                                       //新增评论
 	AddComments(comments []*models.CommentInDB) error                                                   //批量增加评论
-	DeleteComment(cmtID int) error                                                                     //删除评论
+	DeleteComment(cmtID int) error                                                                      //删除评论
 	QueryComment(cmtID int) (*models.CommentInDB, error)                                                //查询DB评论
 	UpdateComment(cmt *models.CommentInDB) error                                                        //修改评论
 	QueryComments(postID int) ([]*models.CommentInDB, error)                                            //查询DB评论
@@ -46,15 +46,16 @@ type IDataIO interface {
 	Belittle(pb *models.PBInDB) error                          //贬
 	PraiseCancel(pb *models.PBInDB) error                      //取消赞
 	BelittleCancel(pb *models.PBInDB) error                    //取消贬
-	SetPB(cmtID int, userID int, isP bool, isD bool) error    //尝试设置PB
+	SetPB(cmtID int, userID int, isP bool, isD bool) error     //尝试设置PB
 
 	AddUser(user *models.UserInDB) error                                                //新增用户
-	DeleteUser(userID int) error                                                       //删除用户
+	DeleteUser(userID int) error                                                        //删除用户
 	QueryUserByID(userID int) (*models.UserInDB, error)                                 //通过id查询用户
 	QueryUserByAccountAndPwd(account string, password string) (*models.UserInDB, error) //通过账户密码查询用户
-	QueryPostCountOfUser(userID int) (int, error)                                      //查询用户的发帖量
-	IsUserNameExist(name string) bool                                                  //用户名是否存在
-	IsUserAccountExist(account string) bool                                            //用户账号是否存在
+	QueryPostCountOfUser(userID int) (int, error)                                       //查询用户的发帖量
+	UpdateUserHeadPhoto(userID int, path string) error                                  //更新头像文件路径
+	IsUserNameExist(name string) bool                                                   //用户名是否存在
+	IsUserAccountExist(account string) bool                                             //用户账号是否存在
 }
 
 const (

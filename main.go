@@ -26,10 +26,22 @@ func httpMethodRouterFilter(ctx *context.Context) {
 }
 
 func main() {
-	//读取数据库配置
+	var err error
+	//初始化数据库配置
 	dba.MysqlUser = beego.AppConfig.String("mysqluser")
 	dba.MysqlPwd = beego.AppConfig.String("mysqlpwd")
 	dba.MysqlDb = beego.AppConfig.String("mysqldb")
+	//初始化头像初始路径
+	usecase.InitDefaultHeadPhotoPath(beego.AppConfig.String("defaultHeadPhotoPath"))
+	usecase.HeadPhotoMinWidth, err = beego.AppConfig.Int("headPhotoMinWidth")
+	checkErr(err)
+	usecase.HeadPhotoMaxWidth, err = beego.AppConfig.Int("headPhotoMaxWidth")
+	checkErr(err)
+	usecase.HeadPhotoMinHeight, err = beego.AppConfig.Int("headPhotoMinHeight")
+	checkErr(err)
+	usecase.HeadPhotoMaxHeight, err = beego.AppConfig.Int("headPhotoMaxHeight")
+	checkErr(err)
+	//初始化数据库对象
 	sqlIns := new(dba.MySQLIns)
 	checkErr(sqlIns.Open(""))
 	defer sqlIns.Close()

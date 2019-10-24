@@ -575,6 +575,7 @@ select
 	   cmt.cmt_content,
        u.ur_id,
 	   u.ur_name,
+	   u.ur_hp_path,
 	   cmt.cmt_c_time,
 	   cmt.cmt_e_times,
 	   cmt.cmt_le_time,
@@ -614,6 +615,7 @@ func (s *sqlBase) QueryCommentsOfPostPage(postID int, count int, offset int, use
 			&cmt.Content,
 			&cmt.CmterID,
 			&cmt.CmterName,
+			&cmt.CmterHeadPhotoPath,
 			&cmt.CmtTime,
 			&cmt.CmtEditTimes,
 			&cmt.LastEditTime,
@@ -954,6 +956,14 @@ func (s *sqlBase) QueryPostCountOfUser(userID int) (int, error) {
 	var count int
 	err := s.QueryRow(sqlStrToQueryPostCountOfUser, userID).Scan(&count)
 	return count, err
+}
+
+const sqlStrToUpdateUserHeadPhoto = "update tb_user set ur_hp_path = ? where ur_id = ?"
+
+//UpdateUserHeadPhoto 更新头像文件路径
+func (s *sqlBase) UpdateUserHeadPhoto(userID int, path string) error {
+	_, err := s.Exec(sqlStrToUpdateUserHeadPhoto, path, userID)
+	return err
 }
 
 const sqlStrToIsUserNameExist = "select ur_id from tb_user where ur_name = ?"

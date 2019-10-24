@@ -13,8 +13,9 @@ type CmtOnPostPage struct {
 	ID      int
 	Content string
 
-	CmterID   int
-	CmterName string
+	CmterID            int
+	CmterName          string
+	CmterHeadPhotoPath string
 
 	CmtTime      int64
 	CmtEditTimes int

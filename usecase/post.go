@@ -15,32 +15,33 @@ type PostAddData struct {
 }
 
 func (data *PostAddData) buildPostDb() *models.PostInDB {
-	post := new(models.PostInDB)
-	//post.ID = 0
-	post.ThemeID = data.ThemeID
-	post.UserID = data.UserID
-	post.Title = data.Title
-	post.State = models.PostStateNormal
-	post.CreatedTime = time.Now().UnixNano()
-	//post.CmtCount = 0
-	post.LastCmterID = data.UserID
-	//post.LastCmtTime = 0
-	return post
+	return &models.PostInDB{
+		ID:          0,
+		ThemeID:     data.ThemeID,
+		UserID:      data.UserID,
+		Title:       data.Title,
+		State:       models.PostStateNormal,
+		CreatedTime: time.Now().UnixNano(),
+		CmtCount:    0,
+		LastCmterID: data.UserID,
+		LastCmtTime: 0,
+	}
 }
 
 func (data *PostAddData) buildCmtDb() *models.CommentInDB {
-	cmt := new(models.CommentInDB)
-	//cmt.ID =0
-	//cmt.PostID =0
-	cmt.UserID = data.UserID
-	cmt.Content = data.Content
-	cmt.State = models.CmtStateNormal
-	cmt.CreatedTime = time.Now().UnixNano()
-	cmt.LastEditTime = cmt.CreatedTime
-	cmt.EditTimes = 1
-	//cmt.PraiseTimes =0
-	//cmt.BelittleTimes =0
-	return cmt
+	unixTime := time.Now().UnixNano()
+	return &models.CommentInDB{
+		ID:            0,
+		PostID:        0,
+		UserID:        data.UserID,
+		Content:       data.Content,
+		State:         models.CmtStateNormal,
+		CreatedTime:   unixTime,
+		LastEditTime:  unixTime,
+		EditTimes:     1,
+		PraiseTimes:   0,
+		BelittleTimes: 0,
+	}
 }
 
 //QueryPost 帖子查询
