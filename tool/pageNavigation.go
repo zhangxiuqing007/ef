@@ -53,6 +53,9 @@ func (operator *PageNavigationOperator) GetNavigationPageLimitIndex(
 //限制页索引
 func (operator *PageNavigationOperator) LimitPageIndex(currentIndex int, countOnePage int, totalCount int) int {
 	maxIndex := totalCount / countOnePage
+	if totalCount%countOnePage == 0 {
+		maxIndex--
+	}
 	if currentIndex > maxIndex {
 		currentIndex = maxIndex
 	}

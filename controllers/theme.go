@@ -1,8 +1,5 @@
 package controllers
 
-const postCountOnePage = 20                //主题页，一页帖子数量
-const halfPageCountToNavigationOfTheme = 8 //帖子导航页数量
-
 type ThemeController struct {
 	baseController
 }

@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
         <title>边缘社区-发布新帖</title>
+        <script src="../static/js/image.js"></script>
+        <link rel="stylesheet" href="../static/css/ef.css" type="text/css">
     </head>
     <body>
         {{ template "comp/comp_login_head_info.html" . }}
@@ -10,7 +12,6 @@
         <form method="POST" action="/newPost" enctype="application/x-www-form-urlencoded">
             <!-- 不可见，默认选中了目标主题 -->
             <div hidden>
-                <span>主题：</span>
                 <label>
                     <input type="text" name="ThemeID" value="{{.vm.ThemeID}}">
                 </label>
@@ -18,18 +19,19 @@
             <p>
                 <span>标题：</span>
                 <label>
-                    <input type="text" name="Title">
+                    <textarea class="titleInput" name="Title"></textarea>
                 </label>
             </p>
             <p>
                 <span>内容：</span>
                 <label>
-                    <input type="text" name="Content">
+                    <textarea class="cmtInput" id="EditingInputControl" name="Content"></textarea>
                 </label>
             </p>
             <p>
                 <input type="submit" value="提交">
             </p>
         </form>
+        {{ template "comp/comp_img_control.html" }}
     </body>
 </html>

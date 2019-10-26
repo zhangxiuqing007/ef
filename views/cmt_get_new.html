@@ -3,6 +3,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
     <title>边缘社区-发表评论</title>
+    <script src="../static/js/image.js"></script>
+    <link rel="stylesheet" href="../static/css/ef.css" type="text/css">
 </head>
 <body>
     {{ template "comp/comp_login_head_info.html" . }}
@@ -12,9 +14,13 @@
     <form action="/cmt" method="POST">
         <label>
             <input hidden type="text" name="PostID" value="{{ .vm.PostID }}">
-            <input type="text" name="CmtContent">
-            <input type="submit" value="提交">
+            <textarea class="cmtInput" name="CmtContent" id="EditingInputControl"></textarea>
+            <p>
+                <input type="submit" value="提交">
+            </p>
         </label>
     </form>
+    <br>
+    {{ template "comp/comp_img_control.html" }}
 </body>
 </html>

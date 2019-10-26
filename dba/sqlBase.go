@@ -860,6 +860,7 @@ insert into tb_user
 	ur_su_time,
 	ur_post_count,
 	ur_cmt_count,
+	ur_img_count,
 	ur_p_times,
 	ur_b_times,
 	ur_le_time
@@ -878,6 +879,7 @@ func (s *sqlBase) AddUser(user *models.UserInDB) error {
 		user.SignUpTime,
 		user.PostCount,
 		user.CommentCount,
+		user.ImageCount,
 		user.PraiseTimes,
 		user.BelittleTimes,
 		user.LastEditTime)
@@ -913,6 +915,7 @@ func (s *sqlBase) QueryUserByID(userID int) (*models.UserInDB, error) {
 		&user.SignUpTime,
 		&user.PostCount,
 		&user.CommentCount,
+		&user.ImageCount,
 		&user.PraiseTimes,
 		&user.BelittleTimes,
 		&user.LastEditTime)
@@ -939,6 +942,7 @@ func (s *sqlBase) QueryUserByAccountAndPwd(account string, password string) (*mo
 		&user.SignUpTime,
 		&user.PostCount,
 		&user.CommentCount,
+		&user.ImageCount,
 		&user.PraiseTimes,
 		&user.BelittleTimes,
 		&user.LastEditTime)
@@ -955,6 +959,15 @@ const sqlStrToQueryPostCountOfUser = "select ur_post_count from tb_user where ur
 func (s *sqlBase) QueryPostCountOfUser(userID int) (int, error) {
 	var count int
 	err := s.QueryRow(sqlStrToQueryPostCountOfUser, userID).Scan(&count)
+	return count, err
+}
+
+const sqlStrToQueryImageCountOfUser = "select ur_img_count from tb_user where ur_id = ?;"
+
+//QueryImageCountOfUser 统计用户上传图片的量
+func (s *sqlBase) QueryImageCountOfUser(userID int) (int, error) {
+	var count int
+	err := s.QueryRow(sqlStrToQueryImageCountOfUser, userID).Scan(&count)
 	return count, err
 }
 
@@ -992,4 +1005,59 @@ func (s *sqlBase) passwordMd5ToHexStr(password string) string {
 	}
 	md5Str := hex.EncodeToString(buffer)
 	return md5Str
+}
+
+const sqlStrToAddImagesPart1 = "insert into tb_img (img_user_id,img_upload_time,img_path) values (?,?,?);"
+const sqlStrToAddImagesPart2 = "update tb_user set ur_img_count = ur_img_count + 1;"
+
+//批量新增图片
+func (s *sqlBase) AddImages(images []*models.ImageInDB) error {
+	tx, _ := s.DB.Begin()
+	stmt1, _ := tx.Prepare(sqlStrToAddImagesPart1)
+	stmt2, _ := tx.Prepare(sqlStrToAddImagesPart2)
+	defer stmt1.Close()
+	defer stmt2.Close()
+	for _, v := range images {
+		if result, err := stmt1.Exec(v.UserID, v.UploadTime, v.FilePath); err != nil {
+			tx.Rollback()
+			return err
+		} else {
+			newID, err := result.LastInsertId()
+			if err != nil {
+				tx.Rollback()
+				return err
+			}
+			v.ID = int(newID)
+		}
+		//更新用户上传图片计数器
+		if _, err := stmt2.Exec(); err != nil {
+			if err != nil {
+				tx.Rollback()
+				return err
+			}
+		}
+	}
+	return tx.Commit()
+}
+
+const sqlStrToQueryImages = `select tb_img.img_path
+from tb_img,
+(select img_id from tb_img where img_user_id = ? order by img_id limit ? offset ?) as imgId
+where tb_img.img_id = imgId.img_id`
+
+//图片查询
+func (s *sqlBase) QueryImages(userID int, count int, offset int) ([]string, error) {
+	rows, err := s.Query(sqlStrToQueryImages, userID, count, offset)
+	if err != nil {
+		return nil, err
+	}
+	paths := make([]string, 0, count)
+	for rows.Next() {
+		var path string
+		if err := rows.Scan(&path); err != nil {
+			return nil, err
+		}
+		paths = append(paths, path)
+	}
+	return paths, nil
 }

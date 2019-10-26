@@ -3,15 +3,18 @@ package models
 import (
 	"ef/tool"
 	"fmt"
+	"html/template"
 	"strconv"
+	"strings"
 	"time"
 )
 
 //CmtOnPostPage 评论在帖子页展示的信息
 type CmtOnPostPage struct {
 	//查询的值
-	ID      int
-	Content string
+	ID         int
+	Content    string
+	ContentESC template.HTML
 
 	CmterID            int
 	CmterName          string
@@ -75,6 +78,23 @@ func (cmt *CmtOnPostPage) FormatAllowEdit(userID int) {
 //FormatCmtPageIndex 生成当前 评论 页面的index
 func (cmt *CmtOnPostPage) FormatCmtPageIndex(index int) {
 	cmt.CmtPageIndex = index
+}
+
+//替换图片和对应的style
+func (cmt *CmtOnPostPage) FormatImageWithStyle() {
+	if strings.Contains(cmt.Content, "[img]") {
+		content := cmt.Content
+		//必须手动转义其他可能存在的尖括号
+		if strings.Contains(content, "<") {
+			content = strings.ReplaceAll(content, "<", "&lt")
+			content = strings.ReplaceAll(content, ">", "&gt")
+		}
+		//再转义图片符号
+		content = strings.ReplaceAll(content, "[img]", "<img")
+		content = strings.ReplaceAll(content, "[/img]", "></img>")
+		cmt.Content = content
+	}
+	cmt.ContentESC = template.HTML(cmt.Content)
 }
 
 //CommentInDB 评论，数据库形态

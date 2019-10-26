@@ -14,6 +14,13 @@ const sessionCookieId string = "sid"
 
 var cookieLifeTime = beego.BConfig.WebConfig.Session.SessionCookieLifeTime
 
+const postCountOnePage = 20                //主题页，一页帖子数量
+const cmtCountOnePage = 20                 //帖子页，一页评论的数量
+const imgCountOnePage = 8                  //图片页一页显示的数量
+const halfPageCountToNavigationOfTheme = 8 //帖子导航页数量
+const halfPageCountToNavigationOfPost = 8  //评论导航页数量
+const halfPageCountToNavigationOfImage = 8 //图片导航页数量
+
 //登录信息vm
 type loginVm struct {
 	IsLogin  bool
@@ -153,7 +160,7 @@ func (c *baseController) sendPostPage(data *postFormData) {
 	//查询评论内容
 	vm.PostOnPostPage.FormatShowInfo(s.UserID)
 	//限制页Index
-	pageIndex := oper.LimitPageIndex(data.PageIndex, cmtCountOnePage, vm.CmtCount)
+	pageIndex := oper.LimitPageIndex(data.PageIndex, cmtCountOnePage, vm.CmtCount+1)
 	vm.Comments, err = usecase.QueryCommentsOfPostPage(data.PostID, cmtCountOnePage, pageIndex*cmtCountOnePage, s.UserID)
 	if err != nil {
 		c.send404("找不到评论")
@@ -167,9 +174,10 @@ func (c *baseController) sendPostPage(data *postFormData) {
 		v.FormatIndex(baseLayerCount + i)
 		v.FormatAllowEdit(s.UserID)
 		v.FormatCmtPageIndex(pageIndex)
+		v.FormatImageWithStyle()
 	}
 	//制作导航链接
-	beginIndex, endIndex := oper.GetNavigationPageLimitIndex(pageIndex, cmtCountOnePage, halfPageCountToNavigationOfPost, vm.CmtCount)
+	beginIndex, endIndex := oper.GetNavigationPageLimitIndex(pageIndex, cmtCountOnePage, halfPageCountToNavigationOfPost, vm.CmtCount+1)
 	pathBuilder := func(index int) string {
 		return fmt.Sprintf("/post?PostID=%d&PageIndex=%d", data.PostID, index)
 	}

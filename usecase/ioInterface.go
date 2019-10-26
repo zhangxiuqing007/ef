@@ -53,9 +53,13 @@ type IDataIO interface {
 	QueryUserByID(userID int) (*models.UserInDB, error)                                 //通过id查询用户
 	QueryUserByAccountAndPwd(account string, password string) (*models.UserInDB, error) //通过账户密码查询用户
 	QueryPostCountOfUser(userID int) (int, error)                                       //查询用户的发帖量
+	QueryImageCountOfUser(userID int) (int, error)                                      //查询用户上传图片数量
 	UpdateUserHeadPhoto(userID int, path string) error                                  //更新头像文件路径
 	IsUserNameExist(name string) bool                                                   //用户名是否存在
 	IsUserAccountExist(account string) bool                                             //用户账号是否存在
+
+	AddImages(images []*models.ImageInDB) error                      //批量新增图片
+	QueryImages(userID int, count int, offset int) ([]string, error) //图片查询
 }
 
 const (

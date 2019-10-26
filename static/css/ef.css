@@ -1,0 +1,26 @@
+.titleInput{
+    width: 100%;
+    max-height: 200px;
+    word-wrap: break-word;      /*单词需要完整显示，自动换行*/
+}
+
+.cmtInput{
+    width: 100%;
+    min-height: 320px;
+    word-wrap: break-word;      /*单词需要完整显示，自动换行*/
+}
+
+.cmtShow{
+    white-space: pre-wrap;      /*所有内容，空白、换行都是有效的*/
+    word-wrap: break-word;      /*单词需要完整显示，自动换行*/
+    /*
+    word-break: break-all;
+    border-left-width: 50px;
+    border-style: solid;
+    */
+}
+
+.headPhotoShowInPost{
+    max-width: 64px;
+    max-height: 64px;
+}

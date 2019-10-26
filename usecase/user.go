@@ -32,6 +32,7 @@ func (data UserSignUpData) buildUserIns() *models.UserInDB {
 		SignUpTime:    time.Now().UnixNano(),
 		PostCount:     0,
 		CommentCount:  0,
+		ImageCount:    0,
 		PraiseTimes:   0,
 		BelittleTimes: 0,
 		LastEditTime:  0,

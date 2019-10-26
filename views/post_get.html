@@ -31,6 +31,7 @@
             httpRequest.send("CmtID="+id+"&IsP="+isPrise+"&IsD="+cb.checked);
         }
     </script>
+    <link rel="stylesheet" href="../static/css/ef.css" type="text/css">
 </head>
 <body>
     <!--导航-->
@@ -48,16 +49,16 @@
     <div>
         <span>[{{ .IndexStr }}]</span>
         <a href="/user?UserID={{ .CmterID }}">{{ .CmterName }}</a>
-        <img src="{{ .CmterHeadPhotoPath }}" width="64px">
+        <img src="{{ .CmterHeadPhotoPath }}" class="headPhotoShowInPost">
         <span>{{ .CmtTimeF }}</span>
         <!-- 如果拥有编辑的权力 -->
         {{ if .AllowEdit }} 
         <a href="/cmt?CmtID={{ .ID }}&CmtPageIndex={{ .CmtPageIndex }}">编辑</a>
         {{ end }}
     </div>
-    <div>
-        {{ .Content }}
-    </div>
+    <p>
+        <label class="cmtShow">{{ .ContentESC }}</label>
+    </p>
     <div>
         <label for="{{.ID}}p_cb"></label><input type="checkbox" id="{{.ID}}p_cb" {{.IsPChecked}} onclick="onCheckBoxClicked(true,{{ .ID }})"> 赞(<span id="{{.ID}}p_times">{{ .PraiseTimes }}</span>)
         <label for="{{.ID}}b_cb"></label><input type="checkbox" id="{{.ID}}b_cb" {{.IsBChecked}} onclick="onCheckBoxClicked(false,{{ .ID }})">踩(<span id="{{.ID}}b_times">{{ .BelittleTimes }}</span>)
@@ -75,7 +76,7 @@
         <p>快速评论：</p>
         <p>
             <label>
-                <input type="text" name="CmtContent">
+                <input type="text" name="CmtContent" width="640" height="45">
             </label>
         </p>
         <p>

@@ -3,6 +3,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
         <title>边缘社区-标题编辑</title>
+        <link rel="stylesheet" href="../static/css/ef.css" type="text/css">
     </head>
     <body>
         {{ template "comp/comp_login_head_info.html" . }}
@@ -16,7 +17,7 @@
             </label>
             <p>
                 <label>
-                    <input type="text" name="Title" value="{{ .vm.OriTitle }}">
+                    <textarea class="titleInput" name="Title">{{ .vm.OriTitle }}</textarea>
                 </label>
             </p>
             <p><input type="submit" value="提交"></p>

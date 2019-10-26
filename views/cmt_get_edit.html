@@ -3,6 +3,8 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
         <title>边缘社区-评论编辑</title>
+        <script src="../static/js/image.js"></script>
+        <link rel="stylesheet" href="../static/css/ef.css" type="text/css">
     </head>
     <body>
         {{ template "comp/comp_login_head_info.html" . }}
@@ -19,10 +21,14 @@
             </label>
             <p>
                 <label>
-                    <input type="text" name="CmtContent" value="{{ .vm.OriCmtContent }}">
+                    <textarea class="cmtInput" name="CmtContent" id="EditingInputControl">{{ .vm.OriCmtContent }}</textarea>
                 </label>
             </p>
-            <p><input type="submit" value="提交"></p>
+            <p>
+                <input type="submit" value="提交">
+            </p>
         </form>
+        <br>
+        {{ template "comp/comp_img_control.html" }}
     </body>
 </html>

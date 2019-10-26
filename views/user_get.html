@@ -6,12 +6,26 @@
         <title>边缘社区-用户资料</title>
     </head>
     <body>
-        <img src="{{ .vm.HeadPhotoPath }}" alt="用户头像">
+        <div>
+            <img src="{{ .vm.HeadPhotoPath }}" alt="用户头像">
+        </div>
         {{ if .vm.AllowFixHeadPhoto }}
-        <a href="/headPhoto">修改头像</a>
+            <div>
+                <a href="/headPhoto">修改头像</a>
+            </div>
         {{ end }}
         <div>昵称：{{.vm.Name}}</div>
         <div>注册时间：{{.vm.SignUpTime}}</div>
+        {{ if .vm.AllowFixHeadPhoto }}
+        <p>
+            <form method="post" action="/img">
+                <label>
+                    <input hidden name="_method" value="PUT">
+                </label>
+                <input type="submit" value="上传图片">
+            </form>
+        </p>
+        {{ end }}
         <div>类型：{{.vm.Type}}</div>
         <div>状态：{{.vm.State}}</div>
         <div>发帖数：{{.vm.PostCount}}</div>

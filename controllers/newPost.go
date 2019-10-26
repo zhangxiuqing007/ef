@@ -3,6 +3,7 @@ package controllers
 import (
 	"ef/usecase"
 	"time"
+	"unicode/utf8"
 )
 
 type NewPostController struct {
@@ -76,6 +77,11 @@ func (c *NewPostController) Post() {
 	data := new(usecase.PostAddData)
 	if err := c.ParseForm(data); err != nil {
 		c.send400("请求信息错误")
+		return
+	}
+	//检查发布的内容
+	if utf8.RuneCountInString(data.Title) < 2 || utf8.RuneCountInString(data.Content) < 2 {
+		c.send403("标题或内容至少需要2个字")
 		return
 	}
 	data.UserID = s.UserID

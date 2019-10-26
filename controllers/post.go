@@ -1,8 +1,5 @@
 package controllers
 
-const cmtCountOnePage = 20                //帖子页，一页评论的数量
-const halfPageCountToNavigationOfPost = 8 //评论导航页数量
-
 type postFormData struct {
 	PostID    int
 	PageIndex int

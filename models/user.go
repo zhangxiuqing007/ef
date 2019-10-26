@@ -15,6 +15,7 @@ type UserInDB struct {
 
 	PostCount    int
 	CommentCount int
+	ImageCount   int
 
 	PraiseTimes   int
 	BelittleTimes int

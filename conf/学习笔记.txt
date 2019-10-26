@@ -22,4 +22,6 @@
     innodb_flush_log_at_trx_commit=0  默认1 
     reset master：清空Data文件夹内大量的bin.0000x文件。
 10、当存在嵌套多层error时，代码很丑，可以尝试recover来简化，不过特殊的错误逻辑仍需处理error。
+11、使用template.HTML的string，可以防止Go的模板引擎转义，但是要自己处理好对应字段的转义工作。
+
 

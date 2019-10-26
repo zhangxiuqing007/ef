@@ -1,0 +1,20 @@
+<div>
+    <!-- 这里是图片分页 -->
+    {{ range .navigationInfo.HeadPages }}
+        <button onclick="requestImagesAndShow({{ .Number }}-1)">{{ .Number }}</button>
+    {{ end }}
+    <span> [{{.navigationInfo.CurrentPage.Number}}] </span>
+    {{ range .navigationInfo.TailPages }}
+        <button onclick="requestImagesAndShow({{ .Number }}-1)">{{ .Number }}</button>
+    {{ end }}
+    <!-- 这里纵向罗列所有图片 -->
+    {{ range .vm.ImagePaths}}
+        <p>
+            <button onclick="insertImageToCmtContent({{ . }})">插入：</button>
+            <div>
+                <img src="{{ . }}" height="256px" alt="{{ . }}">
+            </div>
+        </p>
+        <br>
+    {{ end }}
+</div>
