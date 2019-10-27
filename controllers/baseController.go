@@ -10,7 +10,7 @@ import (
 	"github.com/astaxie/beego" //整个controller层都是依赖于beego的
 )
 
-const sessionCookieId string = "sid"
+var SessionCookieKey string
 
 var cookieLifeTime = beego.BConfig.WebConfig.Session.SessionCookieLifeTime
 
@@ -29,7 +29,7 @@ type loginVm struct {
 }
 
 //Session 会话对象
-type session struct {
+type Session struct {
 	Sid          string
 	PostSortType int //帖子排序方式
 	UserID       int
@@ -37,7 +37,7 @@ type session struct {
 }
 
 //创建登录信息
-func (s *session) buildLoginInfo() *loginVm {
+func (s *Session) buildLoginInfo() *loginVm {
 	return &loginVm{
 		IsLogin:  s.UserID > 0,
 		UserID:   s.UserID,
@@ -51,14 +51,15 @@ type baseController struct {
 }
 
 //获取session对象
-func (c *baseController) getSession() *session {
-	if inter := c.GetSession(sessionCookieId); inter == nil {
-		news := new(session)
-		c.SetSession(sessionCookieId, news)
-		//获取刚刚生成的sid
-		news.Sid = c.CruSession.SessionID()
+func (c *baseController) getSession() *Session {
+	//获取cookie值
+	if sIns := c.GetSession(SessionCookieKey); sIns == nil {
+		newSIns := new(Session)
+		newSIns.Sid = c.Ctx.GetCookie(SessionCookieKey)
+		c.SetSession(SessionCookieKey, newSIns)
+		//补充设置cookie
 		setCookie := func(path string) {
-			c.Ctx.SetCookie(sessionCookieId, news.Sid, cookieLifeTime, path, "", false, true)
+			c.Ctx.SetCookie(SessionCookieKey, newSIns.Sid, cookieLifeTime, path, "", false, true)
 		}
 		setCookie("/account")
 		setCookie("/session")
@@ -71,9 +72,9 @@ func (c *baseController) getSession() *session {
 		setCookie("/attitude")
 		setCookie("/headPhoto")
 		setCookie("/img")
-		return news
+		return newSIns
 	} else {
-		return inter.(*session)
+		return sIns.(*Session)
 	}
 }
 
@@ -87,7 +88,7 @@ func (c *baseController) setLoginVmSelf() {
 }
 
 //设置登录Vm信息
-func (c *baseController) setLoginVm(s *session) {
+func (c *baseController) setLoginVm(s *Session) {
 	c.Data["loginInfo"] = s.buildLoginInfo()
 }
 

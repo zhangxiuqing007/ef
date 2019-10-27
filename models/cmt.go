@@ -51,11 +51,11 @@ func (cmt *CmtOnPostPage) FormatCheckedStrOfPB() {
 
 //FormatStringTime 生成文字类型的时间
 func (cmt *CmtOnPostPage) FormatStringTime() {
-	timrStr := tool.FormatTimeDetail(time.Unix(0, cmt.CmtTime))
+	timeStr := tool.FormatTimeDetail(time.Unix(0, cmt.CmtTime))
 	if cmt.CmtEditTimes >= 2 {
-		cmt.CmtTimeF = fmt.Sprintf("初次评论后，修改过%d次，最后编辑时间：%s", cmt.CmtEditTimes-1, timrStr)
+		cmt.CmtTimeF = fmt.Sprintf("初次评论后，修改过%d次，最后编辑时间：%s", cmt.CmtEditTimes-1, timeStr)
 	} else {
-		cmt.CmtTimeF = timrStr
+		cmt.CmtTimeF = timeStr
 	}
 }
 

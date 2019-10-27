@@ -1,12 +1,15 @@
 package main
 
 import (
+	"ef/controllers"
 	"ef/dba"
 	_ "ef/routers"
 	"ef/usecase"
+	"encoding/gob"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
+	_ "github.com/astaxie/beego/session/redis"
 )
 
 func checkErr(err error) {
@@ -27,10 +30,14 @@ func httpMethodRouterFilter(ctx *context.Context) {
 
 func main() {
 	var err error
+	//允许redis的session，注册结构体
+	gob.Register(&controllers.Session{})
 	//初始化数据库配置
 	dba.MysqlUser = beego.AppConfig.String("mysqluser")
 	dba.MysqlPwd = beego.AppConfig.String("mysqlpwd")
 	dba.MysqlDb = beego.AppConfig.String("mysqldb")
+	//初始化session配置：名称
+	controllers.SessionCookieKey = beego.BConfig.WebConfig.Session.SessionName
 	//初始化头像初始路径
 	usecase.InitDefaultHeadPhotoPath(beego.AppConfig.String("defaultHeadPhotoPath"))
 	usecase.HeadPhotoMinWidth, err = beego.AppConfig.Int("headPhotoMinWidth")
