@@ -1,8 +1,8 @@
 未完成单元测试：
 package：dba
-	AddImages(images []*models.ImageInDB) error                                 //批量新增图片
-	QueryImages(userID int, count int, offset int) ([]*models.ImageInDB, error) //图片查询
-	SetPB(cmtID int, userID int, isP bool, isD bool) error      //尝试设置PB
-	UpdateUserHeadPhoto(userID int, path string) error          //更新头像文件路径
-    QueryImageCountOfUser(userID int) (int, error)              //统计用户上传图片的量
+	AddImages(images []*models.ImageInDB) error                      		//批量新增图片
+	QueryImages(userID int, count int, offset int) ([]string, error) 		//图片查询
+	SetPB(cmtID int, userID int, isP bool, isD bool) error    		 //尝试设置PB
+	UpdateUserHeadPhoto(userID int, path string) error                                  //更新头像文件路径
+	QueryImageCountOfUser(userID int) (int, error)                                      //查询用户上传图片数量
 

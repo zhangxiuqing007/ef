@@ -16,3 +16,7 @@ function requestImagesAndShow(pageIndex) {
     };
     httpRequest.send(null);
 }
+
+function getElementByInfo() {
+
+}
