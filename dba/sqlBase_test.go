@@ -2,6 +2,7 @@ package dba
 
 import (
 	"ef/models"
+	"ef/tool"
 	"fmt"
 	"math/rand"
 	"testing"
@@ -286,6 +287,7 @@ func Test_PostAndCmt(t *testing.T) {
 			if !randTool.isTwoPbSame(pbq, pb) {
 				t.Fatal("x失败：两PB不一致")
 			}
+			checkErr(sqlIns.SetPB(c.ID, u.ID, rand.Float64() > 0.5, rand.Float64() > 0.5))
 		}
 	}
 	//赞踩验证
@@ -322,6 +324,32 @@ func Test_PostAndCmt(t *testing.T) {
 		}
 	}
 	t.Log("成功：删除帖子")
+	//批量新增图片
+	imgs := make([]*models.ImageInDB, 0, 100)
+	for i := 0; i < 100; i++ {
+		imgs = append(imgs, &models.ImageInDB{
+			ID:         0,
+			UserID:     users[rand.Intn(len(users))].ID,
+			UploadTime: time.Now().UnixNano(),
+			FilePath:   tool.NewUUID() + ".png",
+		})
+	}
+	checkErr(sqlIns.AddImages(imgs))
+	//图片查询
+	for _, v := range users {
+		_, err := sqlIns.QueryImages(v.ID, rand.Intn(10), rand.Intn(100))
+		checkErr(err)
+	}
+	//查询用户上传图片数量
+	for _, v := range users {
+		_, err := sqlIns.QueryImageCountOfUser(v.ID)
+		checkErr(err)
+	}
+	//更新用户头像
+	for _, v := range users {
+		checkErr(sqlIns.UpdateUserHeadPhoto(v.ID, tool.NewUUID()+".png"))
+	}
+
 	//删除用户
 	for _, v := range users {
 		checkErr(sqlIns.DeleteUser(v.ID))

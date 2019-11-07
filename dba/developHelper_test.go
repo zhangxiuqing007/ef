@@ -132,8 +132,8 @@ func Test_HelpAddSomePostAndCmts(t *testing.T) {
 	//随机赞踩
 	for _, c := range allComments {
 		for _, u := range userIDs {
-			//90%的概率不进行赞踩
-			if rand.Intn(100) > 10 {
+			//一定概率不进行赞踩
+			if rand.Intn(100) >= 1 {
 				continue
 			}
 			pb := new(models.PBInDB)
