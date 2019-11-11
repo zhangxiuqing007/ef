@@ -97,6 +97,13 @@ func (cmt *CmtOnPostPage) FormatImageWithStyle() {
 	cmt.ContentESC = template.HTML(cmt.Content)
 }
 
+//检查头像
+func (cmt *CmtOnPostPage) CheckHeadPhoto(defaultPath string) {
+	if cmt.CmterHeadPhotoPath == "" {
+		cmt.CmterHeadPhotoPath = defaultPath
+	}
+}
+
 //CommentInDB 评论，数据库形态
 type CommentInDB struct {
 	ID     int

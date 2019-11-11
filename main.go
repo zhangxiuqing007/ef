@@ -39,7 +39,7 @@ func main() {
 	//初始化session配置：名称
 	controllers.SessionCookieKey = beego.BConfig.WebConfig.Session.SessionName
 	//初始化头像初始路径
-	usecase.InitDefaultHeadPhotoPath(beego.AppConfig.String("defaultHeadPhotoPath"))
+	usecase.DefaultHeadPhotoPath = beego.AppConfig.String("defaultHeadPhotoPath")
 	usecase.HeadPhotoMinWidth, err = beego.AppConfig.Int("headPhotoMinWidth")
 	checkErr(err)
 	usecase.HeadPhotoMaxWidth, err = beego.AppConfig.Int("headPhotoMaxWidth")

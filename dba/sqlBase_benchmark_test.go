@@ -183,3 +183,14 @@ func BenchmarkPB(b *testing.B) {
 		}
 	}
 }
+
+//测试查询图片的速度
+func BenchmarkSqlBase_QueryImages(b *testing.B) {
+	sqlIns := new(testResourceBuilder).buildCurrentTestSQLIns()
+	rand.Seed(time.Now().UnixNano())
+	const userCount = 11
+	for i := 0; i < b.N; i++ {
+		_, err := sqlIns.QueryImages(rand.Intn(userCount)+1, rand.Intn(6)+2, rand.Intn(10))
+		checkErr(err)
+	}
+}

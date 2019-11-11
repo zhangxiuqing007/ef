@@ -11,7 +11,7 @@ import (
 
 //默认值
 var MysqlUser = "root"
-var MysqlPwd = "root123"
+var MysqlPwd = "mysql5856"
 var MysqlDb = "efdb_bu"
 
 //MySQLIns mysql数据库实现

@@ -7,11 +7,7 @@ import (
 	"unicode/utf8"
 )
 
-var defaultHeadPhotoPath string
-
-func InitDefaultHeadPhotoPath(path string) {
-	defaultHeadPhotoPath = path
-}
+var DefaultHeadPhotoPath string
 
 //UserSignUpData 新用户注册传输用数据结构，由Controller创建。
 type UserSignUpData struct {
@@ -26,7 +22,7 @@ func (data UserSignUpData) buildUserIns() *models.UserInDB {
 		Account:       data.Account,
 		PassWord:      data.Password,
 		Name:          data.Name,
-		HeadPhotoPath: defaultHeadPhotoPath,
+		HeadPhotoPath: DefaultHeadPhotoPath,
 		Type:          models.UserTypeNormalUser,
 		State:         models.UserStateNormal,
 		SignUpTime:    time.Now().UnixNano(),

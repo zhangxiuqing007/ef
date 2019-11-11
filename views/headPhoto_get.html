@@ -6,9 +6,9 @@
 </head>
 <body>
     <form action="/headPhoto" method="POST" enctype="multipart/form-data">
-        <input hidden type="text" accept="image/jpeg,image/png,image/gif" name="_method" value="PUT">
+        <input hidden type="text" name="_method" value="PUT">
         <label>选择头像图片文件：</label>
-        <input type="file" name="headPhotoFile">
+        <input type="file" accept="image/jpeg,image/gif,image/png" name="headPhotoFile">
         <input type="submit" value="提交">
     </form>
 </body>

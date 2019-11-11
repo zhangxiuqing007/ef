@@ -176,6 +176,7 @@ func (c *baseController) sendPostPage(data *postFormData) {
 		v.FormatAllowEdit(s.UserID)
 		v.FormatCmtPageIndex(pageIndex)
 		v.FormatImageWithStyle()
+		v.CheckHeadPhoto(usecase.DefaultHeadPhotoPath)
 	}
 	//制作导航链接
 	beginIndex, endIndex := oper.GetNavigationPageLimitIndex(pageIndex, cmtCountOnePage, halfPageCountToNavigationOfPost, vm.CmtCount+1)
@@ -205,6 +206,10 @@ func (c *baseController) sendUserPage(data *userFromData) {
 	if err != nil {
 		c.send404("用户不存在")
 		return
+	}
+	//检查头像
+	if saInfo.HeadPhotoPath == "" {
+		saInfo.HeadPhotoPath = usecase.DefaultHeadPhotoPath
 	}
 	vm := new(userVm)
 	vm.UserInDB = saInfo

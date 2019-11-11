@@ -287,7 +287,6 @@ func Test_PostAndCmt(t *testing.T) {
 			if !randTool.isTwoPbSame(pbq, pb) {
 				t.Fatal("x失败：两PB不一致")
 			}
-			checkErr(sqlIns.SetPB(c.ID, u.ID, rand.Float64() > 0.5, rand.Float64() > 0.5))
 		}
 	}
 	//赞踩验证
@@ -306,6 +305,14 @@ func Test_PostAndCmt(t *testing.T) {
 			if tc.PraiseTimes != 0 || tc.BelittleTimes != 0 {
 				t.Fatal("x失败：评论赞踩数量不对")
 			}
+		}
+	}
+	for _, u := range users {
+		for _, c := range cmts {
+			pb := new(models.PBInDB)
+			pb.CmtID = c.ID
+			pb.UserID = u.ID
+			checkErr(sqlIns.SetPB(c.ID, u.ID, rand.Float64() > 0.5, rand.Float64() > 0.5))
 		}
 	}
 	t.Log("成功：所有赞踩执行成功")

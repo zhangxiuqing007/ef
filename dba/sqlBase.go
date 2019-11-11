@@ -1008,7 +1008,7 @@ func (s *sqlBase) passwordMd5ToHexStr(password string) string {
 }
 
 const sqlStrToAddImagesPart1 = "insert into tb_img (img_user_id,img_upload_time,img_path) values (?,?,?);"
-const sqlStrToAddImagesPart2 = "update tb_user set ur_img_count = ur_img_count + 1;"
+const sqlStrToAddImagesPart2 = "update tb_user set ur_img_count = ur_img_count + 1 where ur_id = ?;"
 
 //批量新增图片
 func (s *sqlBase) AddImages(images []*models.ImageInDB) error {
@@ -1030,7 +1030,7 @@ func (s *sqlBase) AddImages(images []*models.ImageInDB) error {
 			v.ID = int(newID)
 		}
 		//更新用户上传图片计数器
-		if _, err := stmt2.Exec(); err != nil {
+		if _, err := stmt2.Exec(v.UserID); err != nil {
 			if err != nil {
 				tx.Rollback()
 				return err
