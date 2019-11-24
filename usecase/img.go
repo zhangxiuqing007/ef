@@ -32,24 +32,21 @@ func (i *ImageUpload) buildDBIns() *models.ImageInDB {
 }
 
 //保存图片，到本地硬盘和数据库
-func SaveImages(images []*ImageUpload) error {
+func SaveImages(images []*ImageUpload) {
 	//逐张图片保存到本地硬盘中，并转换成数据库结构
 	dbImages := make([]*models.ImageInDB, len(images))
 	for i, v := range images {
-		err := ioutil.WriteFile(v.FilePath, v.Buffer, os.ModeType)
-		if err != nil {
-			return err
-		}
+		checkErr(ioutil.WriteFile(v.FilePath, v.Buffer, os.ModePerm))
 		dbImages[i] = v.buildDBIns()
 	}
 	//全部保存到数据库中
-	return db.AddImages(dbImages)
+	db.AddImages(dbImages)
 }
 
-func GetUserImageCount(userID int) (int, error) {
+func GetUserImageCount(userID int) int {
 	return db.QueryImageCountOfUser(userID)
 }
 
-func QueryImages(userID int, count int, offset int) ([]string, error) {
+func QueryImages(userID int, count int, offset int) []string {
 	return db.QueryImages(userID, count, offset)
 }

@@ -41,8 +41,8 @@ func (c *SessionController) Post() {
 		return
 	}
 	//查询用户
-	if user, err := usecase.QueryUserByAccountAndPwd(data.Account, data.Password); err != nil {
-		c.sendInputPage(err.Error())
+	if user := usecase.QueryUserByAccountAndPwd(data.Account, data.Password); user == nil {
+		c.sendInputPage("账号密码错误")
 	} else {
 		s := c.getSession()
 		s.UserID = user.ID

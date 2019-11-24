@@ -36,43 +36,43 @@ func (data UserSignUpData) buildUserIns() *models.UserInDB {
 }
 
 //AddUser signUp
-func AddUser(data *UserSignUpData) error {
+func AddUser(data *UserSignUpData) {
 	//检查昵称合法性
 	if utf8.RuneCountInString(data.Name) == 0 {
-		return errors.New("昵称不合法（至少一个字）")
+		panic(errors.New("昵称不合法（至少一个字）"))
 	}
 	//检查账户合法性
 	if utf8.RuneCountInString(data.Account) < 3 {
-		return errors.New("账号不合法（至少三个字符）")
+		panic(errors.New("账号不合法（至少三个字符）"))
 	}
 	//检查密码合法性
 	if utf8.RuneCountInString(data.Password) < 3 {
-		return errors.New("密码不合法（至少三个字符）")
+		panic(errors.New("密码不合法（至少三个字符）"))
 	}
 	//检查昵称占用
 	if db.IsUserNameExist(data.Name) {
-		return errors.New("昵称被占用")
+		panic(errors.New("昵称被占用"))
 	}
 	//检查账户占用
 	if db.IsUserAccountExist(data.Account) {
-		return errors.New("账号被占用")
+		panic(errors.New("账号被占用"))
 	}
 	//保存
 	user := data.buildUserIns()
-	return db.AddUser(user)
+	db.AddUser(user)
 }
 
 //QueryUserByAccountAndPwd 用户查询
-func QueryUserByAccountAndPwd(account string, password string) (*models.UserInDB, error) {
+func QueryUserByAccountAndPwd(account string, password string) *models.UserInDB {
 	return db.QueryUserByAccountAndPwd(account, password)
 }
 
 //QueryUserByID 查询用户信息
-func QueryUserByID(userID int) (*models.UserInDB, error) {
+func QueryUserByID(userID int) *models.UserInDB {
 	return db.QueryUserByID(userID)
 }
 
 //QueryPostCountOfUser 查询用户的发帖量
-func QueryPostCountOfUser(userID int) (int, error) {
+func QueryPostCountOfUser(userID int) int {
 	return db.QueryPostCountOfUser(userID)
 }

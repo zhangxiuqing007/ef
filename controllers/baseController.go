@@ -94,7 +94,8 @@ func (c *baseController) setLoginVm(s *Session) {
 
 //发送首页
 func (c *baseController) sendIndexPage() {
-	if tms, err := usecase.QueryAllThemes(); err != nil || len(tms) == 0 {
+	tms := usecase.QueryAllThemes()
+	if len(tms) == 0 {
 		c.send404("无主题")
 	} else {
 		c.setLoginVmSelf()
@@ -111,22 +112,14 @@ type themeVm struct {
 
 //发送主题页
 func (c *baseController) sendThemePage(data *themeFormData) {
-	tm, err := usecase.QueryTheme(data.ThemeID)
-	if err != nil {
-		c.send404("无法找到主题")
-		return
-	}
+	tm := usecase.QueryTheme(data.ThemeID)
 	vm := new(themeVm)
 	vm.ThemeID = tm.ID
 	vm.WebTitle = "边缘社区-" + tm.Name
 	session := c.getSession()
 	oper := new(tool.PageNavigationOperator)
 	pageIndex := oper.LimitPageIndex(data.PageIndex, postCountOnePage, tm.PostCount)
-	vm.PostHeaders, err = usecase.QueryPostsOfTheme(tm.ID, postCountOnePage, pageIndex*postCountOnePage, session.PostSortType)
-	if err != nil {
-		c.send404("找不到主题内的帖子列表")
-		return
-	}
+	vm.PostHeaders = usecase.QueryPostsOfTheme(tm.ID, postCountOnePage, pageIndex*postCountOnePage, session.PostSortType)
 	for _, v := range vm.PostHeaders {
 		v.FormatShowInfo()
 	}
@@ -150,23 +143,14 @@ type postVm struct {
 //发送帖子页
 func (c *baseController) sendPostPage(data *postFormData) {
 	vm := new(postVm)
-	var err error
-	vm.PostOnPostPage, err = usecase.QueryPostOfPostPage(data.PostID)
-	if err != nil {
-		c.send404("找不到标题")
-		return
-	}
+	vm.PostOnPostPage = usecase.QueryPostOfPostPage(data.PostID)
 	oper := new(tool.PageNavigationOperator)
 	s := c.getSession()
 	//查询评论内容
 	vm.PostOnPostPage.FormatShowInfo(s.UserID)
 	//限制页Index
 	pageIndex := oper.LimitPageIndex(data.PageIndex, cmtCountOnePage, vm.CmtCount+1)
-	vm.Comments, err = usecase.QueryCommentsOfPostPage(data.PostID, cmtCountOnePage, pageIndex*cmtCountOnePage, s.UserID)
-	if err != nil {
-		c.send404("找不到评论")
-		return
-	}
+	vm.Comments = usecase.QueryCommentsOfPostPage(data.PostID, cmtCountOnePage, pageIndex*cmtCountOnePage, s.UserID)
 	//生成文字的日期、赞和踩的checkBox属性和评论所在的楼层
 	baseLayerCount := pageIndex * cmtCountOnePage
 	for i, v := range vm.Comments {
@@ -202,8 +186,8 @@ type userVm struct {
 
 //发送用户页
 func (c *baseController) sendUserPage(data *userFromData) {
-	saInfo, err := usecase.QueryUserByID(data.UserID)
-	if err != nil {
+	saInfo := usecase.QueryUserByID(data.UserID)
+	if saInfo == nil {
 		c.send404("用户不存在")
 		return
 	}

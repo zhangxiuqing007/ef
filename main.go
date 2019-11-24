@@ -50,7 +50,8 @@ func main() {
 	checkErr(err)
 	//初始化数据库对象
 	sqlIns := new(dba.MySQLIns)
-	checkErr(sqlIns.Open(""))
+	sqlIns.Open("")
+	beego.BConfig.RecoverPanic = true
 	defer sqlIns.Close()
 	usecase.SetDbInstance(sqlIns)
 	//添加路由过滤器

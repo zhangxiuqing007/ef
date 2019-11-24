@@ -25,11 +25,8 @@ func (c *AttitudeController) Post() {
 		c.send401("请先登录")
 		return
 	}
-	//无法完成请求的内容
-	if err := usecase.SetPB(data.CmtID, s.UserID, data.IsP, data.IsD); err != nil {
-		c.send406("操作失败")
-		return
-	}
+	//无法完成请求的内容,如果失败，则直接崩溃
+	usecase.SetPB(data.CmtID, s.UserID, data.IsP, data.IsD)
 	//直接返回语句，代表成功
 	c.send200("")
 }

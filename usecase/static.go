@@ -13,7 +13,7 @@ func GetCurrentHeadPhotoFolder() string {
 	t := time.Now()
 	folderName := fmt.Sprintf("static/img/headPhoto/%d-%d", t.Year(), t.Month())
 	if cacheCurrentHeadPhotoFolderName != folderName {
-		checkErr(os.MkdirAll(folderName, os.ModeType))
+		checkErr(os.MkdirAll(folderName, os.ModePerm))
 		cacheCurrentHeadPhotoFolderName = folderName
 	}
 	return folderName
@@ -24,7 +24,7 @@ func GetCurrentGeneralImageFolder() string {
 	t := time.Now()
 	folderName := fmt.Sprintf("static/img/personal/%d-%d-%d", t.Year(), t.Month(), t.Day())
 	if cacheCurrentGeneralImageFolderName != folderName {
-		checkErr(os.MkdirAll(folderName, os.ModeType))
+		checkErr(os.MkdirAll(folderName, os.ModePerm))
 		cacheCurrentGeneralImageFolderName = folderName
 	}
 	return folderName

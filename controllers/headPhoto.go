@@ -46,11 +46,7 @@ func (c *HeadPhotoController) Put() {
 		c.send400("不是有效的图片文件")
 		return
 	}
-	err = usecase.ChangeHeadPhotoGeneral(s.UserID, buf, img, path.Ext(header.Filename))
-	if err != nil {
-		c.send406("操作失败：" + err.Error())
-		return
-	}
+	usecase.ChangeHeadPhotoGeneral(s.UserID, buf, img, path.Ext(header.Filename))
 	//重新发送用户页
 	c.sendUserPage(&userFromData{UserID: s.UserID})
 }

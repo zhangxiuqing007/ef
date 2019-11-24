@@ -24,18 +24,10 @@ func (c *UserPostsController) Get() {
 	vm := new(themeVm)
 	vm.ThemeID = data.UserID
 	vm.WebTitle = "边缘社区-用户发帖列表"
-	totalPostCount, err := usecase.QueryPostCountOfUser(data.UserID)
-	if err != nil {
-		c.send404("用户发帖不存在")
-		return
-	}
+	totalPostCount := usecase.QueryPostCountOfUser(data.UserID)
 	oper := new(tool.PageNavigationOperator)
 	pageIndex := oper.LimitPageIndex(data.PageIndex, postCountOnePage, totalPostCount)
-	vm.PostHeaders, err = usecase.QueryPostsOfUser(data.UserID, postCountOnePage, pageIndex*postCountOnePage)
-	if err != nil {
-		c.send404("发帖列表未找到")
-		return
-	}
+	vm.PostHeaders = usecase.QueryPostsOfUser(data.UserID, postCountOnePage, pageIndex*postCountOnePage)
 	for _, v := range vm.PostHeaders {
 		v.FormatShowInfo()
 	}

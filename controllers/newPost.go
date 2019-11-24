@@ -40,8 +40,8 @@ type postInputVm struct {
 
 //请求新帖输入页
 func (c *NewPostController) GetToBuildNewPost(data *newPostGetFormData) {
-	tm, err := usecase.QueryTheme(data.ThemeID)
-	if err != nil {
+	tm := usecase.QueryTheme(data.ThemeID)
+	if tm == nil {
 		c.send404("主题不存在")
 		return
 	}
@@ -57,11 +57,7 @@ type postTitleEditVm struct {
 
 //获取标题修改页
 func (c *NewPostController) GetToEditPostTitle(data *newPostGetFormData) {
-	title, err := usecase.QueryPostTitle(data.PostID)
-	if err != nil {
-		c.send404("帖子不存在")
-		return
-	}
+	title := usecase.QueryPostTitle(data.PostID)
 	c.Data["vm"] = &postTitleEditVm{data.PostID, title}
 	c.setLoginVmSelf()
 	c.TplName = "newPost_get_title.html"
@@ -86,10 +82,7 @@ func (c *NewPostController) Post() {
 	}
 	data.UserID = s.UserID
 	/*检查用户权限*/
-	if err := usecase.AddPost(data); err != nil {
-		c.send406("操作失败：" + err.Error())
-		return
-	}
+	usecase.AddPost(data)
 	//成功的话，直接发主题页，无论任何方式排序，都是在主题第一位
 	c.sendThemePage(&themeFormData{
 		ThemeID:   data.ThemeID,
@@ -115,11 +108,7 @@ func (c *NewPostController) Put() {
 		return
 	}
 	//查询旧的Post
-	post, err := usecase.QueryPost(data.PostID)
-	if err != nil {
-		c.send404("帖子不存在")
-		return
-	}
+	post := usecase.QueryPost(data.PostID)
 	//验证合法性
 	if s.UserID != post.UserID {
 		c.send403("无修改权限")
@@ -131,10 +120,7 @@ func (c *NewPostController) Put() {
 	post.Title = data.Title
 	post.LastCmtTime = time.Now().UnixNano()
 	//保存到DB
-	if err := usecase.UpdatePostTitle(post); err != nil {
-		c.send406("操作失败：" + err.Error())
-		return
-	}
+	usecase.UpdatePostTitle(post)
 	//发送帖子页
 	c.sendPostPage(&postFormData{
 		PostID:    data.PostID,

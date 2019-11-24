@@ -13,7 +13,7 @@ func BenchmarkReadAllThemes(b *testing.B) {
 	rander := new(testResourceBuilder)
 	sqlIns := rander.buildCurrentTestSQLIns()
 	for i := 0; i < b.N; i++ {
-		_, _ = sqlIns.QueryAllThemes()
+		sqlIns.QueryAllThemes()
 	}
 }
 
@@ -42,15 +42,11 @@ func BenchmarkInsertComment(b *testing.B) {
 		posts = append(posts, rander.buildRandomPost(themeIDs[rand.Intn(themeCount)], userID))
 		cmts = append(cmts, rander.buildRandomCmt(0, userID))
 	}
-	if err := iotool.AddPosts(posts, cmts); err != nil {
-		b.Fatalf("x失败：插入一些测试帖子，" + err.Error())
-	}
+	iotool.AddPosts(posts, cmts)
 	//多轮评论
 	for i := 0; i < b.N; i++ {
 		cmtIns := rander.buildRandomCmt(posts[rand.Intn(len(posts))].ID, userIDs[rand.Intn(userCount)])
-		if err := iotool.AddComment(cmtIns); err != nil {
-			b.Fatal("x失败：插入评论 " + err.Error())
-		}
+		iotool.AddComment(cmtIns)
 	}
 	b.Log("成功：插入大量评论：" + strconv.Itoa(b.N))
 }
@@ -80,18 +76,14 @@ func BenchmarkBatchInsertComment(b *testing.B) {
 		posts = append(posts, rander.buildRandomPost(themeIDs[rand.Intn(themeCount)], userID))
 		cmts = append(cmts, rander.buildRandomCmt(0, userID))
 	}
-	if err := iotool.AddPosts(posts, cmts); err != nil {
-		b.Fatalf("x失败：插入一些测试帖子，" + err.Error())
-	}
+	iotool.AddPosts(posts, cmts)
 	//多轮评论
 	for i := 0; i < b.N; i++ {
 		cmts := make([]*models.CommentInDB, 0, 500)
 		for i := 0; i < 500; i++ {
 			cmts = append(cmts, rander.buildRandomCmt(posts[rand.Intn(len(posts))].ID, userIDs[rand.Intn(userCount)]))
 		}
-		if err := iotool.AddComments(cmts); err != nil {
-			b.Fatal("x失败：批量插入评论 " + err.Error())
-		}
+		iotool.AddComments(cmts)
 	}
 	b.Log("成功：插入大量评论：" + strconv.Itoa(b.N*500))
 }
@@ -102,10 +94,7 @@ func BenchmarkQueryThemePage(b *testing.B) {
 	randTool.initRandomSeed()
 	sqlIns := randTool.buildCurrentTestSQLIns()
 	defer sqlIns.Close()
-	tms, err := sqlIns.QueryAllThemes()
-	if err != nil {
-		b.Fatal("x错误：" + err.Error())
-	}
+	tms := sqlIns.QueryAllThemes()
 	postCountOnce := 20
 	//开始随机查询主题页帖子头列表
 	for i := 0; i < b.N; i++ {
@@ -118,9 +107,7 @@ func BenchmarkQueryThemePage(b *testing.B) {
 		}
 		//定义一个排序类型
 		sortType := 1
-		if _, err := sqlIns.QueryPostsOfTheme(tm.ID, postCountOnce, postCountOnce*pageIndex, sortType); err != nil {
-			b.Fatal("x错误：" + err.Error())
-		}
+		sqlIns.QueryPostsOfTheme(tm.ID, postCountOnce, postCountOnce*pageIndex, sortType)
 	}
 }
 
@@ -130,18 +117,12 @@ func BenchmarkQueryPostPage(b *testing.B) {
 	randTool.initRandomSeed()
 	sqlIns := randTool.buildCurrentTestSQLIns()
 	defer sqlIns.Close()
-	tms, err := sqlIns.QueryAllThemes()
-	if err != nil {
-		b.Fatal("x错误：" + err.Error())
-	}
+	tms := sqlIns.QueryAllThemes()
 	maxPostCount := 1000
 	tmPostMap := make(map[int][]*models.PostOnThemePage, 16)
 	for _, v := range tms {
 		tmPostMap[v.ID] = make([]*models.PostOnThemePage, 0, maxPostCount)
-		posts, err := sqlIns.QueryPostsOfTheme(v.ID, maxPostCount, 0, 0)
-		if err != nil {
-			b.Fatal("x错误：" + err.Error())
-		}
+		posts := sqlIns.QueryPostsOfTheme(v.ID, maxPostCount, 0, 0)
 		for _, p := range posts {
 			tmPostMap[v.ID] = append(tmPostMap[v.ID], p)
 		}
@@ -161,9 +142,7 @@ func BenchmarkQueryPostPage(b *testing.B) {
 		}
 		//随机产生一个用户ID
 		userID := rand.Intn(11) + 1
-		if _, err := sqlIns.QueryCommentsOfPostPage(post.ID, cmtCountOnce, cmtCountOnce*pageIndex, userID); err != nil {
-			b.Fatal("x错误：" + err.Error())
-		}
+		sqlIns.QueryCommentsOfPostPage(post.ID, cmtCountOnce, cmtCountOnce*pageIndex, userID)
 	}
 }
 
@@ -178,9 +157,7 @@ func BenchmarkPB(b *testing.B) {
 		randCmtID := rand.Intn(cmtCount) + 1
 		isP := rand.Intn(2) == 1
 		isD := rand.Intn(2) == 1
-		if err := sqlIns.SetPB(randCmtID, randUserID, isP, isD); err != nil {
-			b.Fatal("x失败：赞踩请求失败 " + err.Error())
-		}
+		sqlIns.SetPB(randCmtID, randUserID, isP, isD)
 	}
 }
 
@@ -190,7 +167,6 @@ func BenchmarkSqlBase_QueryImages(b *testing.B) {
 	rand.Seed(time.Now().UnixNano())
 	const userCount = 11
 	for i := 0; i < b.N; i++ {
-		_, err := sqlIns.QueryImages(rand.Intn(userCount)+1, rand.Intn(6)+2, rand.Intn(10))
-		checkErr(err)
+		sqlIns.QueryImages(rand.Intn(userCount)+1, rand.Intn(6)+2, rand.Intn(10))
 	}
 }

@@ -42,14 +42,9 @@ func (c *CmtController) GetCmtNewInputPage(data *cmtEditFormData) {
 		c.send401("请先登录")
 		return
 	}
-	var err error
 	vm := new(cmtNewInputVm)
 	vm.PostID = data.CmtPageIndex
-	vm.PostTitle, err = usecase.QueryPostTitle(data.CmtPageIndex)
-	if err != nil {
-		c.send404("帖子不存在")
-		return
-	}
+	vm.PostTitle = usecase.QueryPostTitle(data.CmtPageIndex)
 	c.setLoginVm(s)
 	c.Data["vm"] = vm
 	c.TplName = "cmt_get_new.html"
@@ -63,11 +58,7 @@ type cmtEditVm struct {
 
 //请求评论修改页面
 func (c *CmtController) GetCmtFixPage(data *cmtEditFormData) {
-	cmt, err := usecase.QueryComment(data.CmtID)
-	if err != nil {
-		c.send404("评论不存在")
-		return
-	}
+	cmt := usecase.QueryComment(data.CmtID)
 	//无需检测权限，在编辑好之后，提交的时候检测即可
 	//发送编辑页
 	vm := new(cmtEditVm)
@@ -101,13 +92,10 @@ func (c *CmtController) Post() {
 		return
 	}
 	//添加评论
-	if err := usecase.AddComment(&usecase.CmtAddData{
+	usecase.AddComment(&usecase.CmtAddData{
 		PostID:  data.PostID,
 		UserID:  s.UserID,
-		Content: data.CmtContent}); err != nil {
-		c.send406("操作失败 " + err.Error())
-		return
-	}
+		Content: data.CmtContent})
 	//发送帖子的最后一个评论页
 	c.sendPostPage(&postFormData{
 		PostID:    data.PostID,
@@ -133,11 +121,7 @@ func (c *CmtController) Put() {
 		return
 	}
 	//先从当前db获取评论内容
-	cmt, err := usecase.QueryComment(data.CmtID)
-	if err != nil {
-		c.send404("评论不存在")
-		return
-	}
+	cmt := usecase.QueryComment(data.CmtID)
 	//查看是否有编辑权限
 	if cmt.UserID != s.UserID {
 		c.send401("您无修改权限，必须要发表者身份才能编辑评论")
@@ -148,10 +132,7 @@ func (c *CmtController) Put() {
 	cmt.Content = data.CmtContent
 	cmt.LastEditTime = time.Now().UnixNano()
 	cmt.EditTimes++
-	if err := usecase.UpdateComment(cmt); err != nil {
-		c.send406("操作失败：" + err.Error())
-		return
-	}
+	usecase.UpdateComment(cmt)
 	//发送返回页
 	c.sendPostPage(&postFormData{
 		PostID:    cmt.PostID,

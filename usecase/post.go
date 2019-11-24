@@ -45,42 +45,41 @@ func (data *PostAddData) buildCmtDb() *models.CommentInDB {
 }
 
 //QueryPost 帖子查询
-func QueryPost(postID int) (*models.PostInDB, error) {
+func QueryPost(postID int) *models.PostInDB {
 	return db.QueryPost(postID)
 }
 
 //QueryPostTitle 查询帖子标题
-func QueryPostTitle(postID int) (string, error) {
+func QueryPostTitle(postID int) string {
 	return db.QueryPostTitle(postID)
 }
 
 //UpdatePostTitle 更新帖子标题
-func UpdatePostTitle(post *models.PostInDB) error {
-	return db.UpdatePostTitle(post)
+func UpdatePostTitle(post *models.PostInDB) {
+	db.UpdatePostTitle(post)
 }
 
 //QueryPostsOfTheme 查询帖子列表
-func QueryPostsOfTheme(themeID int, count, offset, sortType int) ([]*models.PostOnThemePage, error) {
+func QueryPostsOfTheme(themeID int, count, offset, sortType int) []*models.PostOnThemePage {
 	return db.QueryPostsOfTheme(themeID, count, offset, sortType)
 }
 
 //QueryPostsOfUser 查询某个用户发的帖子的列表
-func QueryPostsOfUser(userID int, count, offset int) ([]*models.PostOnThemePage, error) {
+func QueryPostsOfUser(userID int, count, offset int) []*models.PostOnThemePage {
 	return db.QueryPostsOfUser(userID, count, offset)
 }
 
 //QueryPostOfPostPage 帖子页内容查询
-func QueryPostOfPostPage(postID int) (*models.PostOnPostPage, error) {
+func QueryPostOfPostPage(postID int) *models.PostOnPostPage {
 	return db.QueryPostOfPostPage(postID)
 }
 
 //AddPost 新增帖子
-func AddPost(data *PostAddData) error {
+func AddPost(data *PostAddData) {
 	//先成PostDB
 	post := data.buildPostDb()
 	//生成CmtDB
 	cmt := data.buildCmtDb()
 	//添加帖子
-	//返回结果
-	return db.AddPost(post, cmt)
+	db.AddPost(post, cmt)
 }

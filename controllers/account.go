@@ -57,11 +57,8 @@ func (c *AccountController) Post() {
 		Account:  data.Account,
 		Password: data.Password1,
 	}
-	//调用用例层代码，尝试添加账户，并返回错误
-	if err := usecase.AddUser(addUser); err != nil {
-		c.sendInputPage("注册失败 " + err.Error())
-		return
-	}
+	//调用用例层代码，尝试添加账户，如果失败，则直接崩溃
+	usecase.AddUser(addUser)
 	//注册成功，发送结果
 	c.TplName = "account_post.html"
 	c.Data["Name"] = data.Name

@@ -39,8 +39,8 @@ func (c *ImageController) Get() {
 		return
 	}
 	//查看图片总数量
-	totalImgCount, err := usecase.GetUserImageCount(s.UserID)
-	if err != nil || totalImgCount == 0 {
+	totalImgCount := usecase.GetUserImageCount(s.UserID)
+	if totalImgCount == 0 {
 		c.send404("查询不到已上传图片信息")
 		return
 	}
@@ -52,8 +52,8 @@ func (c *ImageController) Get() {
 	}
 	c.setNavigationVm(oper.BuildPageNavigations(pathBuilder, beginIndex, pageIndex, endIndex))
 	vm := new(ImageSelectImageVm)
-	vm.ImagePaths, err = usecase.QueryImages(s.UserID, imgCountOnePage, imgCountOnePage*pageIndex)
-	if err != nil || len(vm.ImagePaths) == 0 {
+	vm.ImagePaths = usecase.QueryImages(s.UserID, imgCountOnePage, imgCountOnePage*pageIndex)
+	if len(vm.ImagePaths) == 0 {
 		c.send404("无法找到图片")
 		return
 	}
@@ -93,10 +93,6 @@ func (c *ImageController) Post() {
 		}
 		imageUploads[i] = new(usecase.ImageUpload).SetContent(buffer, s.UserID, path.Ext(v.Filename))
 	}
-	//保存图片
-	if err := usecase.SaveImages(imageUploads); err != nil {
-		c.send406("保存图片失败")
-		return
-	}
+	usecase.SaveImages(imageUploads)
 	c.send200("上传成功")
 }
