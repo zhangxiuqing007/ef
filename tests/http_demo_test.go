@@ -15,6 +15,8 @@ func Test_Get_Index(t *testing.T) {
 		Timeout:       0,
 	}
 	r, err := c.Get(testURL)
-	checkErr(err)
+	if err != nil {
+		panic(err)
+	}
 	t.Log(r.Cookies())
 }
